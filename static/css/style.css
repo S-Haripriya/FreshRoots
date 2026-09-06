@@ -1,0 +1,1441 @@
+
+/* =========================================================
+   FRESHROOTS - MAIN STYLESHEET
+   ========================================================= */
+
+
+/* =========================================================
+   GLOBAL STYLES
+   ========================================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    line-height: 1.6;
+    background-color: #f8fff8;
+    color: #333;
+}
+
+
+/* Remove default link styling */
+
+a {
+    text-decoration: none;
+}
+
+
+/* =========================================================
+   HEADER / NAVBAR
+   ========================================================= */
+
+.site-header {
+    width: 100%;
+    background-color: #2e7d32;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+
+/* Main navbar */
+
+.navbar {
+    width: 100%;
+    min-height: 70px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 6%;
+
+    background-color: #2e7d32;
+}
+
+
+/* =========================================================
+   LOGO
+   ========================================================= */
+
+.navbar-logo {
+    display: flex;
+    align-items: center;
+}
+
+.navbar-logo a {
+    display: flex;
+    align-items: center;
+}
+
+.navbar-logo img {
+    height: 50px;
+    width: auto;
+    display: block;
+}
+
+
+/* If you don't have a logo image yet */
+
+.navbar-logo a {
+    color: white;
+    font-size: 26px;
+    font-weight: bold;
+}
+
+
+/* =========================================================
+   NAVIGATION LINKS
+   ========================================================= */
+
+.navbar-links {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    margin-left: auto;
+}
+
+
+/* Authentication links */
+
+.navbar-auth {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    margin-left: 15px;
+}
+
+
+/* All navbar links */
+
+.navbar-links a,
+.navbar-auth a {
+    color: white;
+
+    font-size: 16px;
+    font-weight: 500;
+
+    padding: 10px 15px;
+
+    border-radius: 5px;
+
+    transition:
+        background-color 0.3s ease,
+        color 0.3s ease,
+        transform 0.2s ease;
+}
+
+
+/* =========================================================
+   HOVER EFFECT
+   ========================================================= */
+
+.navbar-links a:hover,
+.navbar-auth a:hover {
+    background-color: #1b5e20;
+    color: white;
+
+    transform: translateY(-2px);
+}
+
+
+/* =========================================================
+   LOGIN BUTTON
+   ========================================================= */
+
+
+
+/* =========================================================
+   REGISTER BUTTON
+   ========================================================= */
+
+
+.site-header.scrolled {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+}
+/* Register hover */
+
+
+
+/* =========================================================
+   MAIN CONTENT
+   ========================================================= */
+
+main {
+    min-height: calc(100vh - 200px);
+}
+
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+.site-footer {
+    background-color: #2e7d32;
+    color: white;
+
+    margin-top: 60px;
+}
+
+
+/* Footer main container */
+
+.footer-container {
+    max-width: 1200px;
+
+    margin: 0 auto;
+
+    padding: 50px 6%;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 40px;
+}
+
+
+/* Footer headings */
+
+.footer-container h3 {
+    margin-bottom: 15px;
+
+    font-size: 19px;
+
+    color: white;
+}
+
+
+/* Footer paragraphs */
+
+.footer-container p {
+    color: #e8f5e9;
+
+    font-size: 14px;
+
+    margin-bottom: 8px;
+}
+
+
+/* Footer links */
+
+.footer-links {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.footer-links a {
+    color: #e8f5e9;
+
+    margin-bottom: 8px;
+
+    transition:
+        color 0.3s ease,
+        padding-left 0.3s ease;
+}
+
+
+/* Footer link hover */
+
+.footer-links a:hover {
+    color: white;
+
+    padding-left: 5px;
+}
+
+
+/* =========================================================
+   COPYRIGHT
+   ========================================================= */
+
+.footer-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+
+    text-align: center;
+
+    padding: 18px 20px;
+}
+
+.footer-bottom p {
+    margin: 0;
+
+    color: #e8f5e9;
+
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   RESPONSIVE DESIGN
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+    .navbar {
+        flex-direction: column;
+
+        padding: 15px 5%;
+
+        gap: 15px;
+    }
+
+
+    .navbar-links,
+    .navbar-auth {
+        margin-left: 0;
+
+        justify-content: center;
+
+        flex-wrap: wrap;
+    }
+
+
+    .navbar-links a,
+    .navbar-auth a {
+        font-size: 14px;
+
+        padding: 8px 12px;
+    }
+
+
+    .footer-container {
+        grid-template-columns: 1fr;
+
+        text-align: center;
+
+        gap: 30px;
+    }
+
+
+    .footer-links {
+        align-items: center;
+    }
+
+}
+
+
+/* =========================================================
+   SMALL MOBILE DEVICES
+   ========================================================= */
+
+@media (max-width: 480px) {
+
+    .navbar-logo a {
+        font-size: 22px;
+    }
+
+
+    .navbar-links,
+    .navbar-auth {
+        gap: 5px;
+    }
+
+
+    .navbar-links a,
+    .navbar-auth a {
+        padding: 7px 9px;
+
+        font-size: 13px;
+    }
+
+}
+/* =========================================================
+   FRESHROOTS HOME PAGE
+   ========================================================= */
+
+
+/* =========================================================
+   HERO SECTION
+   ========================================================= */
+
+.hero-section {
+    min-height: 75vh;
+
+    background-image:
+        linear-gradient(
+            rgba(20, 60, 25, 0.45),
+            rgba(20, 60, 25, 0.55)
+        ),
+        url("../images/sapling.jpg");
+
+    background-size: cover;
+    background-position: center;
+
+    display: flex;
+    align-items: center;
+
+    position: relative;
+}
+
+
+.hero-overlay {
+    width: 100%;
+}
+
+
+.hero-content {
+    max-width: 1200px;
+
+    margin: 0 auto;
+
+    padding: 100px 6%;
+
+    color: white;
+}
+
+
+.hero-tagline,
+.section-tag {
+    display: inline-block;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    letter-spacing: 2px;
+
+    color: #4caf50;
+
+    margin-bottom: 15px;
+}
+
+
+.hero-tagline {
+    color: #e8f5e9;
+}
+
+
+.hero-content h1 {
+    font-size: clamp(42px, 6vw, 76px);
+
+    line-height: 1.08;
+
+    margin-bottom: 25px;
+
+    font-weight: 700;
+}
+
+
+.hero-content p {
+    max-width: 600px;
+
+    font-size: 18px;
+
+    line-height: 1.8;
+
+    margin-bottom: 35px;
+
+    color: #f1f8f2;
+}
+
+
+/* =========================================================
+   BUTTON
+   ========================================================= */
+
+.hero-btn {
+    display: inline-block;
+
+    padding: 13px 26px;
+
+    background-color: #ffffff;
+
+    color: #2e7d32;
+
+    border-radius: 6px;
+
+    font-weight: 600;
+
+    transition:
+        transform 0.3s ease,
+        background-color 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+
+.hero-btn:hover {
+    background-color: #e8f5e9;
+
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 8px 20px rgba(0, 0, 0, 0.18);
+}
+
+
+/* =========================================================
+   WELCOME SECTION
+   ========================================================= */
+
+.welcome-section {
+    padding: 110px 6%;
+
+    background-color: #f8fff8;
+}
+
+
+.section-heading {
+    max-width: 800px;
+
+    margin: 0 auto;
+
+    text-align: center;
+}
+
+
+.section-heading h2 {
+    font-size: clamp(32px, 4vw, 48px);
+
+    line-height: 1.2;
+
+    color: #244b27;
+
+    margin-bottom: 25px;
+}
+
+
+.section-heading p {
+    font-size: 17px;
+
+    line-height: 1.8;
+
+    color: #666;
+
+    max-width: 700px;
+
+    margin: 0 auto;
+}
+
+
+/* =========================================================
+   STORY SECTIONS
+   ========================================================= */
+
+.story-section {
+    padding: 100px 6%;
+
+    background-color: #ffffff;
+
+    overflow: hidden;
+}
+
+
+.story-section:nth-of-type(even) {
+    background-color: #f5faf5;
+}
+
+
+.story-container {
+    max-width: 1200px;
+
+    margin: 0 auto;
+
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 80px;
+
+    align-items: center;
+}
+
+
+/* =========================================================
+   STORY IMAGE
+   ========================================================= */
+
+.story-image {
+    overflow: hidden;
+
+    border-radius: 14px;
+
+    box-shadow:
+        0 15px 40px rgba(0, 0, 0, 0.12);
+
+    transition:
+        transform 0.5s ease,
+        box-shadow 0.5s ease;
+}
+
+
+.story-image img {
+    width: 100%;
+
+    height: 460px;
+
+    object-fit: cover;
+
+    display: block;
+
+    transition:
+        transform 0.6s ease;
+}
+
+
+.story-image:hover {
+    transform: translateY(-5px);
+
+    box-shadow:
+        0 20px 45px rgba(0, 0, 0, 0.16);
+}
+
+
+.story-image:hover img {
+    transform: scale(1.04);
+}
+
+
+/* =========================================================
+   STORY CONTENT
+   ========================================================= */
+
+.story-content {
+    max-width: 520px;
+}
+
+
+.story-number {
+    display: block;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    letter-spacing: 2px;
+
+    color: #81a684;
+
+    margin-bottom: 12px;
+}
+
+
+.story-content h2 {
+    font-size: clamp(30px, 3.5vw, 44px);
+
+    line-height: 1.2;
+
+    color: #244b27;
+
+    margin-bottom: 25px;
+}
+
+
+.story-content p {
+    font-size: 16px;
+
+    line-height: 1.8;
+
+    color: #666;
+
+    margin-bottom: 15px;
+}
+
+
+/* =========================================================
+   ALTERNATING IMAGE / TEXT
+   ========================================================= */
+
+.story-reverse .story-container {
+    direction: rtl;
+}
+
+
+.story-reverse .story-content,
+.story-reverse .story-image {
+    direction: ltr;
+}
+
+
+/* =========================================================
+   FEATURES
+   ========================================================= */
+
+.features-section {
+    padding: 110px 6%;
+
+    background-color: #f5faf5;
+}
+
+
+.features-container {
+    max-width: 1200px;
+
+    margin: 60px auto 0;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 30px;
+}
+
+
+.feature {
+    background-color: white;
+
+    padding: 40px 30px;
+
+    border-radius: 12px;
+
+    text-align: center;
+
+    border: 1px solid #e4eee4;
+
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+
+.feature:hover {
+    transform: translateY(-8px);
+
+    box-shadow:
+        0 15px 35px rgba(46, 125, 50, 0.12);
+}
+
+
+.feature-icon {
+    font-size: 35px;
+
+    margin-bottom: 20px;
+}
+
+
+.feature h3 {
+    color: #244b27;
+
+    margin-bottom: 12px;
+
+    font-size: 20px;
+}
+
+
+.feature p {
+    color: #666;
+
+    line-height: 1.7;
+
+    font-size: 15px;
+}
+
+
+/* =========================================================
+   CALL TO ACTION
+   ========================================================= */
+
+.cta-section {
+    padding: 120px 6%;
+
+    background-color: #2e7d32;
+
+    text-align: center;
+
+    color: white;
+}
+
+
+.cta-content {
+    max-width: 750px;
+
+    margin: 0 auto;
+}
+
+
+.cta-section .section-tag {
+    color: #c8e6c9;
+}
+
+
+.cta-section h2 {
+    font-size: clamp(34px, 4vw, 52px);
+
+    line-height: 1.2;
+
+    margin-bottom: 20px;
+}
+
+
+.cta-section p {
+    font-size: 17px;
+
+    line-height: 1.7;
+
+    color: #e8f5e9;
+
+    margin-bottom: 30px;
+}
+
+
+/* =========================================================
+   SCROLL ANIMATION
+   ========================================================= */
+
+.story-section,
+.feature,
+.welcome-section,
+.cta-section {
+    opacity: 0;
+
+    transform: translateY(35px);
+
+    transition:
+        opacity 0.8s ease,
+        transform 0.8s ease;
+}
+
+
+.story-section.visible,
+.feature.visible,
+.welcome-section.visible,
+.cta-section.visible {
+    opacity: 1;
+
+    transform: translateY(0);
+}
+
+
+/* =========================================================
+   RESPONSIVE DESIGN
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+    .story-container {
+        grid-template-columns: 1fr;
+
+        gap: 45px;
+    }
+
+
+    .story-reverse .story-container {
+        direction: ltr;
+    }
+
+
+    .story-content {
+        max-width: 100%;
+    }
+
+
+    .story-image img {
+        height: 400px;
+    }
+
+
+    .features-container {
+        grid-template-columns: 1fr;
+
+        max-width: 600px;
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    .hero-section {
+        min-height: 70vh;
+    }
+
+
+    .hero-content {
+        padding: 80px 7%;
+    }
+
+
+    .hero-content h1 {
+        font-size: 42px;
+    }
+
+
+    .hero-content p {
+        font-size: 16px;
+    }
+
+
+    .welcome-section,
+    .story-section,
+    .features-section,
+    .cta-section {
+        padding: 75px 7%;
+    }
+
+
+    .story-image img {
+        height: 300px;
+    }
+
+
+    .story-content h2 {
+        font-size: 32px;
+    }
+
+}
+
+/* =========================================================
+   ABOUT PAGE
+   ========================================================= */
+
+
+/* =========================================================
+   ABOUT HERO
+   ========================================================= */
+
+.about-hero {
+    min-height: 55vh;
+
+    background-image:
+        linear-gradient(
+            rgba(25, 70, 30, 0.55),
+            rgba(25, 70, 30, 0.65)
+        ),
+        url("../images/sapling.jpg");
+
+    background-size: cover;
+    background-position: center;
+
+    display: flex;
+    align-items: center;
+}
+
+
+.about-hero-content {
+    max-width: 850px;
+
+    margin: 0 auto;
+
+    padding: 90px 6%;
+
+    text-align: center;
+
+    color: white;
+}
+
+
+.about-hero-tag {
+    color: #c8e6c9;
+}
+
+
+.about-hero-content h1 {
+    font-size: clamp(38px, 5vw, 62px);
+
+    line-height: 1.15;
+
+    margin-bottom: 25px;
+}
+
+
+.about-hero-content p {
+    max-width: 700px;
+
+    margin: 0 auto;
+
+    font-size: 18px;
+
+    line-height: 1.8;
+
+    color: #edf7ee;
+}
+
+
+/* =========================================================
+   ABOUT STORY
+   ========================================================= */
+
+.about-story {
+    padding: 110px 6%;
+
+    background-color: #ffffff;
+}
+
+
+.about-story-container {
+    max-width: 1200px;
+
+    margin: 0 auto;
+
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 80px;
+
+    align-items: center;
+}
+
+
+.about-story-image {
+    overflow: hidden;
+
+    border-radius: 14px;
+
+    box-shadow:
+        0 15px 40px rgba(0, 0, 0, 0.12);
+}
+
+
+.about-story-image img {
+    width: 100%;
+
+    height: 480px;
+
+    object-fit: cover;
+
+    display: block;
+
+    transition: transform 0.6s ease;
+}
+
+
+.about-story-image:hover img {
+    transform: scale(1.04);
+}
+
+
+.about-story-content {
+    max-width: 550px;
+}
+
+
+.about-story-content h2 {
+    font-size: clamp(32px, 4vw, 46px);
+
+    line-height: 1.2;
+
+    color: #244b27;
+
+    margin-bottom: 25px;
+}
+
+
+.about-story-content p {
+    color: #666;
+
+    font-size: 16px;
+
+    line-height: 1.8;
+
+    margin-bottom: 16px;
+}
+
+
+/* =========================================================
+   MISSION & VISION
+   ========================================================= */
+
+.mission-section {
+    padding: 100px 6%;
+
+    background-color: #f5faf5;
+}
+
+
+.mission-container {
+    max-width: 1000px;
+
+    margin: 0 auto;
+
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 30px;
+}
+
+
+.mission-card {
+    padding: 45px 40px;
+
+    background-color: white;
+
+    border-radius: 12px;
+
+    border: 1px solid #e1ece1;
+
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+
+.mission-card:hover {
+    transform: translateY(-7px);
+
+    box-shadow:
+        0 15px 35px rgba(46, 125, 50, 0.12);
+}
+
+
+.mission-number {
+    display: block;
+
+    color: #81a684;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    letter-spacing: 2px;
+
+    margin-bottom: 15px;
+}
+
+
+.mission-card h2 {
+    color: #244b27;
+
+    font-size: 30px;
+
+    margin-bottom: 15px;
+}
+
+
+.mission-card p {
+    color: #666;
+
+    line-height: 1.8;
+}
+
+
+/* =========================================================
+   VALUES
+   ========================================================= */
+
+.values-section {
+    padding: 110px 6%;
+
+    background-color: #ffffff;
+}
+
+
+.values-container {
+    max-width: 1200px;
+
+    margin: 60px auto 0;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 30px;
+}
+
+
+.value-card {
+    padding: 40px 30px;
+
+    text-align: center;
+
+    background-color: #f8fff8;
+
+    border-radius: 12px;
+
+    border: 1px solid #e4eee4;
+
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+
+.value-card:hover {
+    transform: translateY(-8px);
+
+    box-shadow:
+        0 15px 35px rgba(46, 125, 50, 0.12);
+}
+
+
+.value-icon {
+    font-size: 38px;
+
+    margin-bottom: 20px;
+}
+
+
+.value-card h3 {
+    color: #244b27;
+
+    font-size: 21px;
+
+    margin-bottom: 12px;
+}
+
+
+.value-card p {
+    color: #666;
+
+    line-height: 1.7;
+
+    font-size: 15px;
+}
+
+
+/* =========================================================
+   JOURNEY
+   ========================================================= */
+
+.journey-section {
+    padding: 110px 6%;
+
+    background-color: #f5faf5;
+}
+
+
+.journey-container {
+    max-width: 1100px;
+
+    margin: 70px auto 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+}
+
+
+.journey-step {
+    flex: 1;
+
+    text-align: center;
+
+    max-width: 280px;
+}
+
+
+.journey-number {
+    width: 55px;
+
+    height: 55px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    margin: 0 auto 20px;
+
+    border-radius: 50%;
+
+    background-color: #2e7d32;
+
+    color: white;
+
+    font-weight: 700;
+}
+
+
+.journey-step h3 {
+    color: #244b27;
+
+    font-size: 21px;
+
+    margin-bottom: 10px;
+}
+
+
+.journey-step p {
+    color: #666;
+
+    font-size: 15px;
+
+    line-height: 1.7;
+}
+
+
+.journey-line {
+    width: 80px;
+
+    height: 2px;
+
+    background-color: #a5c6a6;
+}
+
+
+/* =========================================================
+   ABOUT CTA
+   ========================================================= */
+
+.about-cta {
+    padding: 120px 6%;
+
+    background-color: #2e7d32;
+
+    text-align: center;
+
+    color: white;
+}
+
+
+.about-cta-content {
+    max-width: 750px;
+
+    margin: 0 auto;
+}
+
+
+.about-cta .section-tag {
+    color: #c8e6c9;
+}
+
+
+.about-cta h2 {
+    font-size: clamp(34px, 4vw, 52px);
+
+    line-height: 1.2;
+
+    margin-bottom: 20px;
+}
+
+
+.about-cta p {
+    color: #e8f5e9;
+
+    font-size: 17px;
+
+    line-height: 1.8;
+
+    margin-bottom: 30px;
+}
+
+
+/* =========================================================
+   ABOUT PAGE ANIMATIONS
+   ========================================================= */
+
+.about-story,
+.mission-card,
+.value-card,
+.journey-step,
+.about-cta {
+    opacity: 0;
+
+    transform: translateY(35px);
+
+    transition:
+        opacity 0.8s ease,
+        transform 0.8s ease;
+}
+
+
+.about-story.visible,
+.mission-card.visible,
+.value-card.visible,
+.journey-step.visible,
+.about-cta.visible {
+    opacity: 1;
+
+    transform: translateY(0);
+}
+
+
+/* =========================================================
+   RESPONSIVE - TABLET
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+    .about-story-container {
+        grid-template-columns: 1fr;
+
+        gap: 45px;
+    }
+
+
+    .about-story-content {
+        max-width: 100%;
+    }
+
+
+    .mission-container {
+        grid-template-columns: 1fr;
+    }
+
+
+    .values-container {
+        grid-template-columns: 1fr;
+
+        max-width: 600px;
+    }
+
+
+    .journey-container {
+        flex-direction: column;
+
+        gap: 25px;
+    }
+
+
+    .journey-line {
+        width: 2px;
+
+        height: 45px;
+    }
+
+}
+
+
+/* =========================================================
+   RESPONSIVE - MOBILE
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+    .about-hero {
+        min-height: 65vh;
+    }
+
+
+    .about-hero-content {
+        padding: 70px 7%;
+    }
+
+
+    .about-hero-content h1 {
+        font-size: 38px;
+    }
+
+
+    .about-hero-content p {
+        font-size: 16px;
+    }
+
+
+    .about-story,
+    .mission-section,
+    .values-section,
+    .journey-section,
+    .about-cta {
+        padding: 75px 7%;
+    }
+
+
+    .about-story-image img {
+        height: 320px;
+    }
+
+
+    .mission-card {
+        padding: 35px 25px;
+    }
+
+}
+

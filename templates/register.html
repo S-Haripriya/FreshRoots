@@ -1,0 +1,791 @@
+
+{% extends 'base.html' %}
+
+
+{% block title %}
+    FreshRoots | Register
+{% endblock %}
+
+
+{% block extra_css %}
+
+<style>
+
+    /* ================= REGISTER SECTION ================= */
+
+    .auth-section {
+        min-height: calc(100vh - 160px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 60px 20px;
+        background: #f7f9f4;
+    }
+
+
+    .auth-container {
+        width: 100%;
+        max-width: 460px;
+        background: #ffffff;
+        padding: 40px;
+        border-radius: 14px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    }
+
+
+    /* ================= HEADING ================= */
+
+    .auth-container h1 {
+        margin: 0 0 10px;
+        text-align: center;
+        font-size: 30px;
+        color: #31572c;
+    }
+
+
+    .auth-description {
+        text-align: center;
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 30px;
+        font-size: 15px;
+    }
+
+
+    /* ================= FORM ================= */
+
+    .form-group {
+        margin-bottom: 18px;
+    }
+
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #333;
+        font-size: 14px;
+    }
+
+
+    .form-group input {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 13px 14px;
+        border: 1px solid #d7ddd2;
+        border-radius: 8px;
+        outline: none;
+        font-size: 15px;
+        transition:
+            border-color 0.2s ease,
+            box-shadow 0.2s ease;
+    }
+
+
+    .form-group input:focus {
+        border-color: #588157;
+        box-shadow: 0 0 0 3px rgba(88, 129, 87, 0.12);
+    }
+
+
+    .form-group input.error {
+        border-color: #c0392b;
+    }
+
+
+    .form-group input.success {
+        border-color: #588157;
+    }
+
+
+    /* ================= NAME ROW ================= */
+
+    .name-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+
+    /* ================= PASSWORD ================= */
+
+    .password-wrapper {
+        position: relative;
+    }
+
+
+    .password-wrapper input {
+        padding-right: 55px;
+    }
+
+
+    .toggle-password {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        border: none;
+        background: none;
+        color: #666;
+        cursor: pointer;
+        font-size: 13px;
+        padding: 5px;
+    }
+
+
+    .toggle-password:hover {
+        color: #31572c;
+    }
+
+
+    /* ================= PASSWORD STRENGTH ================= */
+
+    .password-strength {
+        margin-top: 8px;
+        font-size: 12px;
+        color: #777;
+    }
+
+
+    .strength-bar {
+        width: 100%;
+        height: 5px;
+        margin-top: 6px;
+        background: #e5e5e5;
+        border-radius: 5px;
+        overflow: hidden;
+    }
+
+
+    .strength-fill {
+        width: 0;
+        height: 100%;
+        transition: width 0.25s ease;
+    }
+
+
+    /* ================= ERROR ================= */
+
+    .form-error {
+        display: none;
+        margin-bottom: 18px;
+        padding: 10px 12px;
+        border-radius: 7px;
+        background: #fff0ef;
+        color: #b42318;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+
+    .form-error.show {
+        display: block;
+    }
+
+
+    /* ================= REGISTER BUTTON ================= */
+
+    .register-submit {
+        width: 100%;
+        padding: 13px;
+        border: none;
+        border-radius: 8px;
+        background: #588157;
+        color: #ffffff;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition:
+            background 0.2s ease,
+            transform 0.1s ease;
+    }
+
+
+    .register-submit:hover {
+        background: #3f6b3d;
+    }
+
+
+    .register-submit:active {
+        transform: scale(0.99);
+    }
+
+
+    .register-submit:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+
+
+    /* ================= LOGIN LINK ================= */
+
+    .auth-login {
+        margin-top: 25px;
+        text-align: center;
+        color: #666;
+        font-size: 14px;
+    }
+
+
+    .auth-login a {
+        color: #31572c;
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+
+    .auth-login a:hover {
+        text-decoration: underline;
+    }
+
+
+    /* ================= RESPONSIVE ================= */
+
+    @media (max-width: 500px) {
+
+        .auth-section {
+            padding: 40px 15px;
+        }
+
+        .auth-container {
+            padding: 30px 22px;
+        }
+
+        .auth-container h1 {
+            font-size: 27px;
+        }
+
+        .name-row {
+            grid-template-columns: 1fr;
+            gap: 0;
+        }
+    }
+
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+
+<section class="auth-section">
+
+    <div class="auth-container">
+
+        <h1>Create an Account</h1>
+
+        <p class="auth-description">
+            Join FreshRoots and discover fresh products
+            from trusted farmers.
+        </p>
+
+
+        <!-- Error message -->
+
+        <div id="form-error" class="form-error"></div>
+
+
+        <form method="POST" id="register-form">
+
+            {% csrf_token %}
+
+
+            <!-- First Name + Last Name -->
+
+            <div class="name-row">
+
+                <div class="form-group">
+
+                    <label for="first_name">
+                        First Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="first_name"
+                        name="first_name"
+                        placeholder="First name"
+                        autocomplete="given-name"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="last_name">
+                        Last Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="last_name"
+                        name="last_name"
+                        placeholder="Last name"
+                        autocomplete="family-name"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+
+            <!-- Email -->
+
+            <div class="form-group">
+
+                <label for="email">
+                    Email
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="Enter your email"
+                    autocomplete="email"
+                    required
+                >
+
+            </div>
+<div class="form-group">
+
+    <label for="contact_number">
+        Contact Number
+    </label>
+
+    <input
+        type="tel"
+        id="contact_number"
+        name="contact_number"
+        placeholder="Enter your contact number"
+        autocomplete="tel"
+        required
+    >
+
+</div>
+
+            <!-- Password -->
+
+            <div class="form-group">
+
+                <label for="password">
+                    Password
+                </label>
+
+                <div class="password-wrapper">
+
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="Create a password"
+                        autocomplete="new-password"
+                        required
+                    >
+
+                    <button
+                        type="button"
+                        class="toggle-password"
+                        data-target="password"
+                    >
+                        Show
+                    </button>
+
+                </div>
+
+
+                <div class="password-strength">
+
+                    <span id="strength-text">
+                        Password strength
+                    </span>
+
+                    <div class="strength-bar">
+
+                        <div
+                            id="strength-fill"
+                            class="strength-fill">
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Confirm Password -->
+
+            <div class="form-group">
+
+                <label for="confirm_password">
+                    Confirm Password
+                </label>
+
+                <div class="password-wrapper">
+
+                    <input
+                        type="password"
+                        id="confirm_password"
+                        name="confirm_password"
+                        placeholder="Confirm your password"
+                        autocomplete="new-password"
+                        required
+                    >
+
+                    <button
+                        type="button"
+                        class="toggle-password"
+                        data-target="confirm_password"
+                    >
+                        Show
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- Register button -->
+
+            <button
+                type="submit"
+                class="register-submit"
+                id="register-button"
+            >
+                Create Account
+            </button>
+
+        </form>
+
+
+        <!-- Login -->
+
+        <p class="auth-login">
+
+            Already have an account?
+
+            <a href="{% url 'login' %}">
+                Login
+            </a>
+
+        </p>
+
+    </div>
+
+</section>
+
+{% endblock %}
+
+
+{% block extra_js %}
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const form = document.getElementById("register-form");
+
+        const firstName = document.getElementById("first_name");
+        const lastName = document.getElementById("last_name");
+        const email = document.getElementById("email");
+
+        const password = document.getElementById("password");
+        const confirmPassword =
+            document.getElementById("confirm_password");
+
+        const registerButton =
+            document.getElementById("register-button");
+
+        const formError =
+            document.getElementById("form-error");
+
+        const strengthText =
+            document.getElementById("strength-text");
+
+        const strengthFill =
+            document.getElementById("strength-fill");
+
+
+        /* ================= SHOW / HIDE PASSWORD ================= */
+
+        const toggleButtons =
+            document.querySelectorAll(".toggle-password");
+
+
+        toggleButtons.forEach(function (button) {
+
+            button.addEventListener("click", function () {
+
+                const targetId =
+                    button.getAttribute("data-target");
+
+                const target =
+                    document.getElementById(targetId);
+
+
+                if (target.type === "password") {
+
+                    target.type = "text";
+                    button.textContent = "Hide";
+
+                } else {
+
+                    target.type = "password";
+                    button.textContent = "Show";
+
+                }
+
+            });
+
+        });
+
+
+        /* ================= PASSWORD STRENGTH ================= */
+
+        password.addEventListener("input", function () {
+
+            const value = password.value;
+
+            let strength = 0;
+
+
+            if (value.length >= 8) {
+                strength++;
+            }
+
+            if (/[A-Z]/.test(value)) {
+                strength++;
+            }
+
+            if (/[a-z]/.test(value)) {
+                strength++;
+            }
+
+            if (/[0-9]/.test(value)) {
+                strength++;
+            }
+
+            if (/[^A-Za-z0-9]/.test(value)) {
+                strength++;
+            }
+
+
+            if (value.length === 0) {
+
+                strengthText.textContent =
+                    "Password strength";
+
+                strengthFill.style.width = "0%";
+
+            }
+
+            else if (strength <= 2) {
+
+                strengthText.textContent =
+                    "Weak password";
+
+                strengthFill.style.width = "35%";
+
+            }
+
+            else if (strength <= 3) {
+
+                strengthText.textContent =
+                    "Medium password";
+
+                strengthFill.style.width = "65%";
+
+            }
+
+            else {
+
+                strengthText.textContent =
+                    "Strong password";
+
+                strengthFill.style.width = "100%";
+
+            }
+
+        });
+
+
+        /* ================= FORM VALIDATION ================= */
+
+        form.addEventListener("submit", function (event) {
+
+            const firstNameValue =
+                firstName.value.trim();
+
+            const lastNameValue =
+                lastName.value.trim();
+
+            const emailValue =
+                email.value.trim();
+
+            const passwordValue =
+                password.value;
+
+            const confirmPasswordValue =
+                confirmPassword.value;
+
+
+            formError.classList.remove("show");
+            formError.textContent = "";
+
+
+            /* Reset error borders */
+
+            document
+                .querySelectorAll(".form-group input")
+                .forEach(function (input) {
+                    input.classList.remove("error");
+                });
+
+
+            /* First name */
+
+            if (firstNameValue === "") {
+
+                event.preventDefault();
+
+                showError(
+                    "Please enter your first name.",
+                    firstName
+                );
+
+                return;
+            }
+
+
+            /* Last name */
+
+            if (lastNameValue === "") {
+
+                event.preventDefault();
+
+                showError(
+                    "Please enter your last name.",
+                    lastName
+                );
+
+                return;
+            }
+
+
+            /* Email */
+
+            if (emailValue === "") {
+
+                event.preventDefault();
+
+                showError(
+                    "Please enter your email address.",
+                    email
+                );
+
+                return;
+            }
+
+
+            /* Password length */
+
+            if (passwordValue.length < 8) {
+
+                event.preventDefault();
+
+                showError(
+                    "Password must contain at least 8 characters.",
+                    password
+                );
+
+                return;
+            }
+
+
+            /* Confirm password */
+
+            if (passwordValue !== confirmPasswordValue) {
+
+                event.preventDefault();
+
+                showError(
+                    "Passwords do not match.",
+                    confirmPassword
+                );
+
+                return;
+            }
+
+
+            /* ================= LOADING STATE ================= */
+
+            registerButton.disabled = true;
+            registerButton.textContent =
+                "Creating Account...";
+
+        });
+
+
+        /* ================= ERROR FUNCTION ================= */
+
+        function showError(message, input) {
+
+            formError.textContent = message;
+            formError.classList.add("show");
+
+            input.classList.add("error");
+
+            input.focus();
+
+        }
+
+
+        /* ================= REMOVE ERRORS ================= */
+
+        document
+            .querySelectorAll(".form-group input")
+            .forEach(function (input) {
+
+                input.addEventListener("input", function () {
+
+                    input.classList.remove("error");
+
+                    formError.classList.remove("show");
+
+                });
+
+            });
+
+
+        /* ================= CONFIRM PASSWORD CHECK ================= */
+
+        confirmPassword.addEventListener(
+            "input",
+            function () {
+
+                if (
+                    confirmPassword.value !== "" &&
+                    password.value === confirmPassword.value
+                ) {
+
+                    confirmPassword.classList.add("success");
+
+                } else {
+
+                    confirmPassword.classList.remove("success");
+
+                }
+
+            }
+        );
+
+    });
+
+</script>
+
+{% endblock %}
+

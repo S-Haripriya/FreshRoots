@@ -1,0 +1,447 @@
+
+{% extends 'base.html' %}
+
+{% block title %}
+    FreshRoots | Login
+{% endblock %}
+
+
+{% block extra_css %}
+
+<style>
+
+    /* ================= LOGIN SECTION ================= */
+
+    .auth-section {
+        min-height: calc(100vh - 160px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 60px 20px;
+        background: #f7f9f4;
+    }
+
+
+    .auth-container {
+        width: 100%;
+        max-width: 430px;
+        background: #ffffff;
+        padding: 40px;
+        border-radius: 14px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    }
+
+
+    /* ================= HEADING ================= */
+
+    .auth-container h1 {
+        margin: 0 0 10px;
+        text-align: center;
+        font-size: 32px;
+        color: #31572c;
+    }
+
+
+    .auth-description {
+        text-align: center;
+        color: #666;
+        margin-bottom: 30px;
+        font-size: 15px;
+    }
+
+
+    /* ================= FORM ================= */
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #333;
+        font-size: 14px;
+    }
+
+
+    .form-group input {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 13px 14px;
+        border: 1px solid #d7ddd2;
+        border-radius: 8px;
+        outline: none;
+        font-size: 15px;
+        transition: border-color 0.2s ease,
+                    box-shadow 0.2s ease;
+    }
+
+
+    .form-group input:focus {
+        border-color: #588157;
+        box-shadow: 0 0 0 3px rgba(88, 129, 87, 0.12);
+    }
+
+
+    .form-group input.error {
+        border-color: #c0392b;
+    }
+
+
+    /* ================= PASSWORD ================= */
+
+    .password-wrapper {
+        position: relative;
+    }
+
+
+    .password-wrapper input {
+        padding-right: 48px;
+    }
+
+
+    .toggle-password {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        border: none;
+        background: none;
+        color: #666;
+        cursor: pointer;
+        font-size: 13px;
+        padding: 5px;
+    }
+
+
+    .toggle-password:hover {
+        color: #31572c;
+    }
+
+
+    /* ================= ERROR MESSAGE ================= */
+
+    .form-error {
+        display: none;
+        margin-bottom: 18px;
+        padding: 10px 12px;
+        border-radius: 7px;
+        background: #fff0ef;
+        color: #b42318;
+        font-size: 14px;
+    }
+
+
+    .form-error.show {
+        display: block;
+    }
+
+
+    /* ================= LOGIN BUTTON ================= */
+
+    .login-submit {
+        width: 100%;
+        padding: 13px;
+        border: none;
+        border-radius: 8px;
+        background: #588157;
+        color: #ffffff;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s ease,
+                    transform 0.1s ease;
+    }
+
+
+    .login-submit:hover {
+        background: #3f6b3d;
+    }
+
+
+    .login-submit:active {
+        transform: scale(0.99);
+    }
+
+
+    .login-submit:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+
+
+    /* ================= REGISTER LINK ================= */
+
+    .auth-register {
+        margin-top: 25px;
+        text-align: center;
+        color: #666;
+        font-size: 14px;
+    }
+
+
+    .auth-register a {
+        color: #31572c;
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+
+    .auth-register a:hover {
+        text-decoration: underline;
+    }
+
+
+    /* ================= RESPONSIVE ================= */
+
+    @media (max-width: 500px) {
+
+        .auth-section {
+            padding: 40px 15px;
+        }
+
+        .auth-container {
+            padding: 30px 22px;
+        }
+
+        .auth-container h1 {
+            font-size: 28px;
+        }
+    }
+
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+
+<section class="auth-section">
+
+    <div class="auth-container">
+
+        <h1>Welcome Back</h1>
+
+        <p class="auth-description">
+            Login to your FreshRoots account
+        </p>
+
+
+        <!-- Error message -->
+{% if messages %}
+    <div id="form-error" class="form-error show">
+        {% for message in messages %}
+            {{ message }}
+        {% endfor %}
+    </div>
+{% else %}
+    <div id="form-error" class="form-error"></div>
+{% endif %}
+
+
+        <form method="POST" id="login-form">
+
+            {% csrf_token %}
+
+
+            <!-- Email -->
+
+            <div class="form-group">
+
+                <label for="email">
+                    Email
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="Enter your email"
+                    autocomplete="email"
+                    required
+                >
+
+            </div>
+
+
+            <!-- Password -->
+
+            <div class="form-group">
+
+                <label for="password">
+                    Password
+                </label>
+
+                <div class="password-wrapper">
+
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="Enter your password"
+                        autocomplete="current-password"
+                        required
+                    >
+
+                    <button
+                        type="button"
+                        class="toggle-password"
+                        id="toggle-password"
+                    >
+                        Show
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- Login button -->
+
+            <button
+                type="submit"
+                class="login-submit"
+                id="login-button"
+            >
+                Login
+            </button>
+
+        </form>
+
+
+        <p class="auth-register">
+
+            Don't have an account?
+
+            <a href="{% url 'register' %}">
+                Register
+            </a>
+
+        </p>
+
+    </div>
+
+</section>
+
+{% endblock %}
+
+
+{% block extra_js %}
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const loginForm = document.getElementById("login-form");
+        const emailInput = document.getElementById("email");
+        const passwordInput = document.getElementById("password");
+        const togglePassword = document.getElementById("toggle-password");
+        const loginButton = document.getElementById("login-button");
+        const formError = document.getElementById("form-error");
+
+
+        /* ================= SHOW / HIDE PASSWORD ================= */
+
+        togglePassword.addEventListener("click", function () {
+
+            if (passwordInput.type === "password") {
+
+                passwordInput.type = "text";
+                togglePassword.textContent = "Hide";
+
+            } else {
+
+                passwordInput.type = "password";
+                togglePassword.textContent = "Show";
+
+            }
+
+        });
+
+
+        /* ================= FORM VALIDATION ================= */
+
+        loginForm.addEventListener("submit", function (event) {
+
+            const email = emailInput.value.trim();
+            const password = passwordInput.value.trim();
+
+            formError.classList.remove("show");
+            formError.textContent = "";
+
+            emailInput.classList.remove("error");
+            passwordInput.classList.remove("error");
+
+
+            /* Email validation */
+
+            if (email === "") {
+
+                event.preventDefault();
+
+                emailInput.classList.add("error");
+
+                formError.textContent = "Please enter your email address.";
+                formError.classList.add("show");
+
+                emailInput.focus();
+
+                return;
+            }
+
+
+            /* Password validation */
+
+            if (password === "") {
+
+                event.preventDefault();
+
+                passwordInput.classList.add("error");
+
+                formError.textContent = "Please enter your password.";
+                formError.classList.add("show");
+
+                passwordInput.focus();
+
+                return;
+            }
+
+
+            /* ================= LOADING STATE ================= */
+
+            loginButton.disabled = true;
+            loginButton.textContent = "Logging in...";
+
+        });
+
+
+        /* ================= REMOVE ERROR ON INPUT ================= */
+
+        emailInput.addEventListener("input", function () {
+
+            emailInput.classList.remove("error");
+
+            if (formError.classList.contains("show")) {
+                formError.classList.remove("show");
+            }
+
+        });
+
+
+        passwordInput.addEventListener("input", function () {
+
+            passwordInput.classList.remove("error");
+
+            if (formError.classList.contains("show")) {
+                formError.classList.remove("show");
+            }
+
+        });
+
+    });
+
+</script>
+
+{% endblock %}

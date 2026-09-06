@@ -1,0 +1,169 @@
+
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>
+        {% block title %}
+            FreshRoots
+        {% endblock %}
+    </title>
+
+    <!-- Main CSS -->
+    <link rel="stylesheet"
+          href="{% static 'css/style.css' %}">
+
+    {% block extra_css %}
+    {% endblock %}
+
+</head>
+
+<body>
+
+    <!-- ================= HEADER ================= -->
+
+    <header class="site-header">
+
+        <nav class="navbar">
+
+            <!-- Logo -->
+            <div class="navbar-logo">
+
+                <a href="{% url 'home' %}">
+                    <img src="{% static 'images/logo/freshroots-logo.png' %}"
+                         alt="FreshRoots">
+                </a>
+
+            </div>
+
+
+            <!-- Navigation Links -->
+            <div class="navbar-links">
+
+                <a href="{% url 'home' %}">
+                    Home
+                </a>
+
+                <a href="{% url 'about' %}">
+                    About
+                </a>
+
+            </div>
+
+
+            <!-- Authentication -->
+            <div class="navbar-auth">
+
+                <a href="{% url 'login' %}" class ="login-btn">
+                    Login
+                </a>
+
+                <a href="{% url 'register' %}" class = "register-btn">
+                    Register
+                </a>
+
+            </div>
+
+        </nav>
+
+    </header>
+
+
+    <!-- ================= MAIN CONTENT ================= -->
+
+    <main>
+
+        {% block content %}
+        {% endblock %}
+
+    </main>
+
+
+    <!-- ================= FOOTER ================= -->
+
+    <footer class="site-footer">
+
+        <div class="footer-container">
+
+
+            <!-- Brand -->
+            <div class="footer-brand">
+
+                <h3>FreshRoots</h3>
+
+                <p>
+                    Fresh, organic and locally grown products
+                    from trusted farmers.
+                </p>
+
+            </div>
+
+
+            <!-- Contact -->
+            <div class="footer-contact">
+           
+                <h3>Contact Us</h3>
+             {% for c in contact %}   
+                <p>
+                    Email: {{ c.c_email }}
+                </p>
+
+                <p>
+                    Phone: +91 {{ c.c_number }}
+                </p>
+              {% endfor %}  
+            </div>
+
+
+            <!-- Quick Links -->
+            <div class="footer-links">
+
+                <h3>Quick Links</h3>
+
+                <a href="{% url 'home' %}">
+                    Home
+                </a>
+
+                <a href="{% url 'about' %}">
+                    About
+                </a>
+
+                <a href="#">
+                    Contact
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- Copyright -->
+        <div class="footer-bottom">
+
+            <p>
+                © <span id="current-year"></span> FreshRoots. All rights reserved.
+            </p>
+
+        </div>
+
+    </footer>
+
+
+    <!-- Main JavaScript -->
+    <script src="{% static 'js/main.js' %}"></script>
+
+    {% block extra_js %}
+    {% endblock %}
+
+</body>
+
+</html>
+

@@ -1,0 +1,770 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    FreshRoots | My Account
+{% endblock %}
+
+
+{% block extra_css %}
+
+<style>
+
+    /* ================= ACCOUNT PAGE ================= */
+
+    .account-section {
+        padding: 50px 20px;
+        min-height: 80vh;
+        background: #f7f8f5;
+    }
+
+    .account-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .account-title {
+        text-align: center;
+        margin-bottom: 35px;
+    }
+
+    .account-title h1 {
+        font-size: 32px;
+        margin-bottom: 8px;
+    }
+
+    .account-title p {
+        color: #666;
+    }
+
+
+    /* ================= USER DETAILS ================= */
+
+    .user-card {
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        margin-bottom: 25px;
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .user-card h2 {
+        margin-bottom: 20px;
+    }
+
+    .user-details {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+
+    .detail-box {
+        background: #f5f6f3;
+        padding: 18px;
+        border-radius: 8px;
+    }
+
+    .detail-box span {
+        display: block;
+        font-size: 13px;
+        color: #777;
+        margin-bottom: 6px;
+    }
+
+    .detail-box strong {
+        font-size: 16px;
+        word-break: break-word;
+    }
+
+
+    /* ================= ACTION BUTTONS ================= */
+
+    .action-section {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+
+    .action-btn {
+        border: none;
+        padding: 13px 22px;
+        border-radius: 7px;
+        font-size: 15px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .purchase-btn {
+        background: #e8ece5;
+        color: #333;
+    }
+
+    .purchase-btn:hover {
+        background: #dce1d8;
+    }
+
+    .sell-btn {
+        background: #3f6f3f;
+        color: white;
+    }
+
+    .sell-btn:hover {
+        background: #315b31;
+    }
+
+
+    /* ================= MESSAGE ================= */
+
+    .message {
+        padding: 14px 18px;
+        border-radius: 7px;
+        margin-bottom: 20px;
+    }
+
+    .message.success {
+        background: #e7f5e8;
+        color: #28632d;
+    }
+
+    .message.error {
+        background: #fdeaea;
+        color: #a52a2a;
+    }
+
+
+    /* ================= FARM FORM ================= */
+
+    .farm-form-container {
+        display: none;
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+        margin-bottom: 30px;
+    }
+
+    .farm-form-container.show {
+        display: block;
+    }
+
+    .farm-form-container h2 {
+        margin-bottom: 8px;
+    }
+
+    .farm-form-description {
+        color: #666;
+        margin-bottom: 25px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 7px;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 15px;
+        box-sizing: border-box;
+    }
+
+    .form-group textarea {
+        min-height: 110px;
+        resize: vertical;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+        outline: none;
+        border-color: #3f6f3f;
+    }
+
+    .certificate-note {
+        font-size: 13px;
+        color: #777;
+        margin-top: 6px;
+    }
+
+    .submit-btn {
+        background: #3f6f3f;
+        color: white;
+        border: none;
+        padding: 13px 25px;
+        border-radius: 7px;
+        cursor: pointer;
+        font-size: 15px;
+    }
+
+    .submit-btn:hover {
+        background: #315b31;
+    }
+
+
+    /* ================= EXISTING FARMS ================= */
+
+    .farms-section {
+        margin-top: 30px;
+    }
+
+    .farms-section h2 {
+        margin-bottom: 20px;
+    }
+
+    .farm-card {
+        background: white;
+        padding: 22px;
+        border-radius: 10px;
+        margin-bottom: 15px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .farm-card h3 {
+        margin-bottom: 12px;
+    }
+
+    .farm-info {
+        margin: 6px 0;
+        color: rgb(10, 75, 20);
+    }
+
+    .verification-status {
+        display: inline-block;
+        margin-top: 10px;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .verified {
+        background: #e4f4e5;
+        color: #28752e;
+    }
+
+    .pending {
+        background: #fff3d6;
+        color: #946b00;
+    }
+
+
+    /* ================= OTHER FARM TYPE ================= */
+
+    #other-farm-type-container {
+        margin-top: 15px;
+    }
+
+
+    /* ================= RESPONSIVE ================= */
+
+    @media (max-width: 500px) {
+
+        .user-details {
+            grid-template-columns: 1fr;
+        }
+
+        .action-section {
+            flex-direction: column;
+        }
+
+        .action-btn {
+            width: 100%;
+        }
+
+        .account-section {
+            padding: 30px 15px;
+        }
+
+    }
+
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+
+<section class="account-section">
+
+    <div class="account-container">
+
+        <!-- PAGE TITLE -->
+
+        <div class="account-title">
+
+            <h1>My Account</h1>
+
+            <p>
+                Manage your FreshRoots account and farms
+            </p>
+
+        </div>
+
+
+        <!-- ================= MESSAGES ================= -->
+
+        {% if messages %}
+
+            {% for message in messages %}
+
+                <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+                    {{ message }}
+                </div>
+
+            {% endfor %}
+
+        {% endif %}
+
+
+        <!-- ================= USER DETAILS ================= -->
+
+        <div class="user-card">
+
+            <h2>Personal Details</h2>
+
+            <div class="user-details">
+
+                <div class="detail-box">
+
+                    <span>Full Name</span>
+
+                    <strong>
+                        {{ user.first_name }} {{ user.last_name }}
+                    </strong>
+
+                </div>
+
+
+                <div class="detail-box">
+
+                    <span>Email</span>
+
+                    <strong>
+                        {{ user.email }}
+                    </strong>
+
+                </div>
+
+
+                <div class="detail-box">
+
+                    <span>Contact Number</span>
+
+                    <strong>
+                        {{ user_profile.contact_number }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= ACTION BUTTONS ================= -->
+
+        <div class="action-section">
+
+            <button
+                type="button"
+                class="action-btn purchase-btn"
+                id="purchaseHistoryBtn">
+
+                Purchase History
+
+            </button>
+
+
+            <button
+                type="button"
+                class="action-btn sell-btn"
+                id="sellProductsBtn">
+
+                Sell Your Products
+
+            </button>
+
+        </div>
+
+
+        <!-- ================= FARM FORM ================= -->
+
+        <div
+            class="farm-form-container"
+            id="farmForm">
+
+            <h2>Register Your Farm</h2>
+
+            <p class="farm-form-description">
+
+                Enter your farm details and upload your certification
+                document for verification.
+
+            </p>
+
+
+            <form
+                method="POST"
+                enctype="multipart/form-data">
+
+                {% csrf_token %}
+
+
+                <!-- FARM NAME -->
+
+                <div class="form-group">
+
+                    <label for="farm_name">
+                        Farm Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="farm_name"
+                        name="farm_name"
+                        required>
+
+                </div>
+
+
+                <!-- ADDRESS -->
+
+                <div class="form-group">
+
+                    <label for="address">
+                        Farm Address
+                    </label>
+
+                    <textarea
+                        id="address"
+                        name="address"
+                        required></textarea>
+
+                </div>
+
+
+                <!-- FARM TYPE -->
+
+                <div class="form-group">
+
+                    <label for="farm_type_select">
+                        Farm Type
+                    </label>
+
+
+                    <!-- Predefined farm types -->
+
+                    <select
+                        id="farm_type_select"
+                        required>
+
+                        <option value="">
+                            Select Farm Type
+                        </option>
+
+                        <option value="Vegetable">
+                            Vegetable Farm
+                        </option>
+
+                        <option value="Fruit">
+                            Fruit Farm
+                        </option>
+
+                        <option value="Dairy">
+                            Dairy Farm
+                        </option>
+
+                        <option value="Poultry">
+                            Poultry Farm
+                        </option>
+
+                        <option value="Mixed">
+                            Mixed Farm
+                        </option>
+
+                        <option value="Other">
+                            Other
+                        </option>
+
+                    </select>
+
+
+                    <!-- Manual farm type -->
+
+                    <div
+                        id="other-farm-type-container"
+                        style="display: none;">
+
+                        <label for="other_farm_type">
+                            Specify Farm Type
+                        </label>
+
+                        <input
+                            type="text"
+                            id="other_farm_type"
+                            placeholder="Enter your farm type">
+
+                    </div>
+
+
+                    <!--
+                        This is the actual field sent to Django.
+                        It will contain either:
+                        Vegetable
+                        Fruit
+                        Dairy
+                        Poultry
+                        Mixed
+                        OR the user's custom value.
+                    -->
+
+                    <input
+                        type="hidden"
+                        name="farm_type"
+                        id="farm_type">
+
+                </div>
+
+
+                <!-- CERTIFICATE -->
+
+                <div class="form-group">
+
+                    <label for="certificate">
+                        Certificate
+                    </label>
+
+                    <input
+                        type="file"
+                        id="certificate"
+                        name="certificate"
+                        accept=".pdf,.jpg,.jpeg,.png"
+                        required>
+
+                    <p class="certificate-note">
+
+                        Accepted formats: PDF, JPG, JPEG and PNG.
+
+                    </p>
+
+                </div>
+
+
+                <!-- SUBMIT -->
+
+                <button
+                    type="submit"
+                    class="submit-btn">
+
+                    Submit Request
+
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <!-- ================= EXISTING FARMS ================= -->
+
+        {% if farms %}
+
+        <div class="farms-section">
+
+            <h2>My Farms</h2>
+
+
+            {% for farm in farms %}
+
+                <div class="farm-card">
+
+                    <h3>
+                        {{ farm.farm_name }}
+                    </h3>
+
+
+                    <p class="farm-info">
+
+                        <strong>Farm ID:</strong>
+                        {{ farm.id }}
+
+                    </p>
+
+
+                    <p class="farm-info">
+
+                        <strong>Address:</strong>
+                        {{ farm.address }}
+
+                    </p>
+
+
+                    <p class="farm-info">
+
+                        <strong>Farm Type:</strong>
+                        {{ farm.farm_type }}
+
+                    </p>
+
+
+                    {% if farm.is_verified %}
+
+                        <span class="verification-status verified">
+                            ✓ Verified
+                        </span>
+
+                    {% else %}
+
+                        <span class="verification-status pending">
+                            Pending Verification
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+        {% endif %}
+
+
+    </div>
+
+</section>
+
+
+<!-- ================= JAVASCRIPT ================= -->
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const sellButton =
+            document.getElementById("sellProductsBtn");
+
+        const purchaseButton =
+            document.getElementById("purchaseHistoryBtn");
+
+        const farmForm =
+            document.getElementById("farmForm");
+
+
+        /* ================= FARM TYPE ELEMENTS ================= */
+
+        const farmTypeSelect =
+            document.getElementById("farm_type_select");
+
+        const otherFarmTypeContainer =
+            document.getElementById("other-farm-type-container");
+
+        const otherFarmType =
+            document.getElementById("other_farm_type");
+
+        const farmType =
+            document.getElementById("farm_type");
+
+
+        /* ================= SELL PRODUCTS ================= */
+
+        sellButton.addEventListener("click", function () {
+
+            farmForm.classList.toggle("show");
+
+            if (farmForm.classList.contains("show")) {
+
+                farmForm.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
+
+            }
+
+        });
+
+
+        /* ================= FARM TYPE ================= */
+
+        farmTypeSelect.addEventListener("change", function () {
+
+            if (this.value === "Other") {
+
+                /*
+                 * User selected Other.
+                 * Show the text field.
+                 */
+
+                otherFarmTypeContainer.style.display = "block";
+
+                otherFarmType.required = true;
+
+                /*
+                 * Clear the hidden farm_type field
+                 * until the user enters a value.
+                 */
+
+                farmType.value = "";
+
+            }
+
+            else {
+
+                /*
+                 * User selected one of the predefined
+                 * farm types.
+                 */
+
+                otherFarmTypeContainer.style.display = "none";
+
+                otherFarmType.required = false;
+
+                otherFarmType.value = "";
+
+                /*
+                 * Put the selected value into the field
+                 * that will be sent to Django.
+                 */
+
+                farmType.value = this.value;
+
+            }
+
+        });
+
+
+        /* ================= CUSTOM FARM TYPE ================= */
+
+        otherFarmType.addEventListener("input", function () {
+
+            /*
+             * Whatever the user enters here is copied
+             * directly into farm_type.
+             */
+
+            farmType.value = this.value.trim();
+
+        });
+
+
+        /* ================= PURCHASE HISTORY ================= */
+
+        purchaseButton.addEventListener("click", function () {
+
+            alert("Purchase history will be available soon.");
+
+        });
+
+    });
+
+</script>
+
+{% endblock %}
