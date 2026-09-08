@@ -8,9 +8,10 @@ class Contact(models.Model):
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE )
 
-    is_verified = models.BooleanField(default=False)
     contact_number = models.CharField(max_length=15)
-
+    @property
+    def is_verified_producer(self):
+        return self.farms.filter(is_verified=True).exists()
     def __str__(self):
         return f"{self.user.first_name} {self.user.last_name}"
         

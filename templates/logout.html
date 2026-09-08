@@ -1,0 +1,37 @@
+
+{% extends 'base.html' %}
+
+{% block title %}
+    FreshRoots | Logout
+{% endblock %}
+
+{% block content %}
+
+<section class="logout-section">
+
+    <div class="logout-container">
+
+        <h2>Logout</h2>
+
+        <p>Are you sure you want to logout?</p>
+
+        <div class="logout-actions">
+
+            <form method="POST" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="confirm-logout-btn">
+                    Yes, Logout
+                </button>
+            </form>
+
+            <a href="{% url 'home' %}" class="cancel-logout-btn">
+                Cancel
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

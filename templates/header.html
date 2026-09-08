@@ -1,0 +1,78 @@
+
+{% load static %}
+
+
+<!-- ================= HEADER ================= -->
+
+<header class="site-header">
+
+    <nav class="navbar">
+
+        <!-- Logo -->
+        <div class="navbar-logo">
+
+            <a href="{% url 'home' %}">
+
+                <img src="{% static 'images/logo/freshroots-logo.png' %}"
+                     alt="FreshRoots">
+
+            </a>
+
+        </div>
+
+
+        <!-- Navigation Links -->
+        <div class="navbar-links">
+
+            <a href="{% url 'home' %}">
+                Home
+            </a>
+
+            <a href="{% url 'about' %}">
+                About
+            </a>
+
+            <a href="#">
+                Browse Products
+            </a>
+
+            <a href="{% url 'profile' %}">
+                Profile
+            </a>
+
+
+            <!--
+                Display Your Products only when
+                the logged-in user is a verified producer.
+            -->
+
+            {% if user.userprofile.is_verified %}
+
+                <a href="#">
+                    Your Products
+                </a>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- Logout -->
+        <div class="navbar-auth">
+
+            <form action="{% url 'logout' %}" method="POST">
+
+                {% csrf_token %}
+
+                <button type="submit" class="logout-btn">
+                    Logout
+                </button>
+
+            </form>
+
+        </div>
+
+    </nav>
+
+</header>
+

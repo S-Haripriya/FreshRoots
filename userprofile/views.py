@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.shortcuts import render, redirect
-
+from django.contrib.auth import logout
 from .models import GetCertified
 
 
@@ -12,12 +12,12 @@ def account(request):
 
     if request.method == "POST":
         farm_name = request.POST.get("farm_name")
-        address = request.POST.get("address")
+        farm_address = request.POST.get("farm_address")
         farm_type = request.POST.get("farm_type")
         certificate = request.FILES.get("certificate")
 
         # Check that all fields are provided
-        if not farm_name or not address or not farm_type or not certificate:
+        if not farm_name or not farm_address or not farm_type or not certificate:
             messages.error(request, "Please fill in all the fields.")
             return redirect("profile")
 
@@ -25,7 +25,7 @@ def account(request):
         GetCertified.objects.create(
             user_profile=user_profile,
             farm_name=farm_name,
-            address=address,
+            farm_address=farm_address,
             farm_type=farm_type,
             certificate=certificate,
             is_verified=False
@@ -49,3 +49,11 @@ def account(request):
     }
 
     return render(request, 'profile.html', context)
+
+
+def logout_view(request):
+
+    if request.method == "POST":
+        logout(request)
+        return redirect("home")
+    return redirect(request, 'logout.html')

@@ -1,0 +1,56 @@
+
+{% load static %}
+
+
+<!-- ================= HEADER ================= -->
+
+<header class="site-header">
+
+    <nav class="navbar">
+
+        <!-- Logo -->
+        <div class="navbar-logo">
+
+            <a href="{% url 'home' %}">
+
+                <img src="{% static 'images/logo/freshroots-logo.png' %}"
+                     alt="FreshRoots">
+
+            </a>
+
+        </div>
+
+
+        <!-- Navigation Links -->
+        <div class="navbar-links">
+
+            <a href="{% url 'home' %}">
+                Home
+            </a>
+
+            <a href="{% url 'about' %}">
+                About
+            </a>
+
+        </div>
+
+
+        <!-- Authentication -->
+        <div class="navbar-auth">
+
+            <a href="{% url 'login' %}"
+               class="login-btn">
+                Login
+            </a>
+
+            <a href="{% url 'register' %}"
+               class="register-btn">
+                Register
+            </a>
+
+        </div>
+
+    </nav>
+
+</header>
+

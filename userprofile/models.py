@@ -7,6 +7,7 @@ class GetCertified(models.Model):
     is_verified = models.BooleanField(default= False)
     farm_name = models.TextField()
     farm_address = models.TextField()
+    farm_type = models.TextField()
     certificate = models.FileField(upload_to='certificates/',blank=True,null=True)
 
     def __str__(self):
