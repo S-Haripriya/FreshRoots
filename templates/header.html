@@ -46,10 +46,10 @@
                 the logged-in user is a verified producer.
             -->
 
-            {% if user.userprofile.is_verified %}
+            {% if user.userprofile.is_verified_producer %}
 
-                <a href="#">
-                    Your Products
+                <a href="{% url 'my_products' %}">
+                    My Products
                 </a>
 
             {% endif %}
