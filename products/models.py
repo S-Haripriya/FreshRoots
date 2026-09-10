@@ -100,35 +100,3 @@ class FarmerProduct(models.Model):
         return self.remaining <= 0
 
 
-# =========================================================
-# SELLING HISTORY (one row per sale/transaction)
-# =========================================================
-
-class SaleRecord(models.Model):
-    """
-    Individual sale event. This is the real 'selling history':
-    both the farmer and admin query this table (filtered
-    differently) to see who sold what, when, and for how much.
-    """
-    farmer_product = models.ForeignKey(
-        FarmerProduct,
-        on_delete=models.CASCADE,
-        related_name='sales'
-    )
-    buyer = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.SET_NULL,
-        null=True, blank=True,
-        related_name='purchases'
-    )
-
-    quantity = models.PositiveIntegerField()
-    price_at_sale = models.DecimalField(max_digits=10, decimal_places=2)
-    sold_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"{self.quantity} x {self.farmer_product.product.name} on {self.sold_at:%Y-%m-%d}"
-
-    @property
-    def total_amount(self):
-        return self.quantity * self.price_at_sale

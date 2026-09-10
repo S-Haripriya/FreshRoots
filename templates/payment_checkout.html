@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    FreshRoots | Payment
+{% endblock %}
+
+{% block extra_css %}
+<style>
+
+    .payment-section {
+        padding: 70px 20px;
+        min-height: 70vh;
+        display: flex;
+        justify-content: center;
+    }
+
+    .payment-box {
+        background: white;
+        max-width: 420px;
+        width: 100%;
+        padding: 35px 30px;
+        border-radius: 14px;
+        box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+        text-align: center;
+    }
+
+    .payment-box h2 {
+        margin-bottom: 5px;
+    }
+
+    .payment-box p.sub {
+        color: #888;
+        font-size: 13px;
+        margin-bottom: 25px;
+    }
+
+    .payment-summary-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 14px;
+        color: #555;
+        margin-bottom: 10px;
+        text-align: left;
+    }
+
+    .payment-total-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 19px;
+        font-weight: 700;
+        color: #244b27;
+        margin: 20px 0;
+        padding-top: 15px;
+        border-top: 1px solid #eee;
+    }
+
+    .pay-now-btn {
+        width: 100%;
+        background: #3f6f3f;
+        color: white;
+        border: none;
+        padding: 14px;
+        border-radius: 8px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    .pay-now-btn:hover {
+        background: #315b31;
+    }
+
+</style>
+{% endblock %}
+
+{% block content %}
+
+<section class="payment-section">
+
+    <div class="payment-box">
+
+        <h2>Checkout</h2>
+        <p class="sub">Simulated payment — no real transaction will occur</p>
+
+        <div class="payment-summary-row">
+            <span>Product</span>
+            <strong>{{ order.farmer_product.product.name }}</strong>
+        </div>
+
+        <div class="payment-summary-row">
+            <span>Quantity</span>
+            <strong>{{ order.quantity }} kg</strong>
+        </div>
+
+        <div class="payment-summary-row">
+            <span>Price per kg</span>
+            <strong>₹{{ order.price_per_unit }}</strong>
+        </div>
+
+        <div class="payment-summary-row">
+            <span>Delivery to</span>
+            <strong>{{ order.delivery_address|truncatechars:40 }}</strong>
+        </div>
+
+        <div class="payment-total-row">
+            <span>Total</span>
+            <span>₹{{ order.total_amount }}</span>
+        </div>
+
+        <form method="POST" action="{% url 'confirm_payment' order.id %}">
+
+            {% csrf_token %}
+
+            <button type="submit" class="pay-now-btn">
+                Pay ₹{{ order.total_amount }}
+            </button>
+
+        </form>
+
+    </div>
+
+</section>
+
+{% endblock %}

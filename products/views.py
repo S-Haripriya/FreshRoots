@@ -2,8 +2,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 
+from django.db.models import Q, F
 from userprofile.models import GetCertified
-from .models import Product, FarmerProduct, SaleRecord
+from .models import Product, FarmerProduct
+from orders.models import SaleRecord
 
 @login_required
 def my_products(request):
@@ -104,3 +106,28 @@ def remove_farmer_product(request, listing_id):
     )
 
     return redirect('my_products')
+
+def browse_products(request):
+    query = request.GET.get('q', '').strip()
+
+    listings = FarmerProduct.objects.filter(
+        is_active=True
+    ).filter(
+        sold_quantity__lt=F('quantity')   # only in-stock listings
+    ).select_related('product', 'farm')
+
+    if query:
+        listings = listings.filter(
+            Q(product__name__icontains=query) |
+            Q(farm__farm_name__icontains=query) |
+            Q(farm__farm_address__icontains=query)
+        )
+
+    context = {
+        "listings": listings,
+        "query": query,
+    }
+
+    return render(request, 'browse_products.html', context)
+
+

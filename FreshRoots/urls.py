@@ -23,7 +23,7 @@ urlpatterns = [
     path('', include('core.urls')),
     path('', include('userprofile.urls')),
     path('', include('products.urls')),
-
+    path('', include('orders.urls')),
 ]
 
 if settings.DEBUG:

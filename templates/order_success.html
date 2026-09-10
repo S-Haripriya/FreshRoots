@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    FreshRoots | Order Confirmed
+{% endblock %}
+
+{% block content %}
+
+<section style="padding: 80px 20px; text-align: center; min-height: 60vh;">
+
+    <h1 style="color: #244b27;">Order Confirmed!</h1>
+
+    <p style="color: #666; margin: 15px 0 30px;">
+        Thank you for your purchase. Your order for
+        {{ order.quantity }} kg of {{ order.farmer_product.product.name }}
+        has been placed successfully.
+    </p>
+
+    <p style="color: #666;">
+        Total Paid: <strong>₹{{ order.total_amount }}</strong>
+    </p>
+
+    <a href="{% url 'browse_products' %}"
+       style="display:inline-block; margin-top:25px; background:#3f6f3f; color:white; padding:12px 25px; border-radius:6px;">
+        Continue Shopping
+    </a>
+
+</section>
+
+{% endblock %}
