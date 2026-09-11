@@ -6,4 +6,5 @@ urlpatterns = [
     path('confirm-payment/<int:order_id>/', views.confirm_payment, name='confirm_payment'),
     path('order-success/<int:order_id>/', views.order_success, name='order_success'),
     path('cancel-order/<int:order_id>/', views.cancel_order, name='cancel_order'),
+    path('purchase-history/', views.purchase_history, name='purchase_history'),
 ]

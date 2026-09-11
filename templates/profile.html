@@ -373,14 +373,14 @@
 
         <div class="action-section">
 
-            <button
-                type="button"
+            
+               <a href = "{% url 'purchase_history' %}"
                 class="action-btn purchase-btn"
-                id="purchaseHistoryBtn">
+                style="text-decoration: none; display: inline-block; text-align: center;">
 
                 Purchase History
 
-            </button>
+        </a>
 
 
             <button
@@ -652,9 +652,7 @@
         const sellButton =
             document.getElementById("sellProductsBtn");
 
-        const purchaseButton =
-            document.getElementById("purchaseHistoryBtn");
-
+        
         const farmForm =
             document.getElementById("farmForm");
 
@@ -757,11 +755,7 @@
 
         /* ================= PURCHASE HISTORY ================= */
 
-        purchaseButton.addEventListener("click", function () {
-
-            alert("Purchase history will be available soon.");
-
-        });
+        
 
     });
 

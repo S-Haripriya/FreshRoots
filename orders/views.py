@@ -90,3 +90,22 @@ def cancel_order(request, order_id):
     order.save(update_fields=['status'])
     messages.info(request, "Order cancelled.")
     return redirect('browse_products')
+@login_required
+def purchase_history(request):
+    orders = Order.objects.filter(
+        customer=request.user
+    ).select_related(
+        'farmer_product__product',
+        'farmer_product__farm'
+    ).order_by('-created_at')
+
+    total_spent = sum(
+        order.total_amount for order in orders if order.status == Order.STATUS_PAID
+    )
+
+    context = {
+        "orders": orders,
+        "total_spent": total_spent,
+    }
+
+    return render(request, 'purchase_history.html', context)    

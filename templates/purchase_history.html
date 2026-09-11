@@ -1,0 +1,297 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    FreshRoots | Purchase History
+{% endblock %}
+
+
+{% block extra_css %}
+
+<style>
+
+    .history-page-section {
+        padding: 50px 20px;
+        min-height: 80vh;
+        background: #f7f8f5;
+    }
+
+    .history-page-container {
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    .history-page-title {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .history-page-title h1 {
+        font-size: 32px;
+        margin-bottom: 8px;
+    }
+
+    .history-page-title p {
+        color: #666;
+    }
+
+
+    /* ================= SUMMARY ================= */
+
+    .history-summary {
+        background: white;
+        padding: 20px 25px;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        margin-bottom: 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .history-summary span {
+        font-size: 13px;
+        color: #777;
+        display: block;
+        margin-bottom: 4px;
+    }
+
+    .history-summary strong {
+        font-size: 22px;
+        color: #244b27;
+    }
+
+
+    /* ================= ORDER CARDS ================= */
+
+    .order-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        padding: 22px;
+        margin-bottom: 18px;
+    }
+
+    .order-card-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 16px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .order-card-top h3 {
+        font-size: 18px;
+        margin-bottom: 4px;
+    }
+
+    .order-farm-name {
+        font-size: 13px;
+        color: #888;
+    }
+
+    .order-status {
+        display: inline-block;
+        padding: 5px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: capitalize;
+        white-space: nowrap;
+    }
+
+    .status-paid {
+        background: #e4f4e5;
+        color: #28752e;
+    }
+
+    .status-pending {
+        background: #fff3d6;
+        color: #946b00;
+    }
+
+    .status-failed,
+    .status-cancelled {
+        background: #fdeaea;
+        color: #a52a2a;
+    }
+
+
+    .order-detail-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-bottom: 14px;
+    }
+
+    .order-detail-box span {
+        display: block;
+        font-size: 12px;
+        color: #888;
+        margin-bottom: 4px;
+    }
+
+    .order-detail-box strong {
+        font-size: 15px;
+        color: #333;
+    }
+
+    .order-address {
+        font-size: 13px;
+        color: #666;
+        background: #f5f6f3;
+        padding: 10px 14px;
+        border-radius: 6px;
+    }
+
+    .order-address span {
+        display: block;
+        font-size: 11px;
+        color: #999;
+        margin-bottom: 3px;
+    }
+
+
+    .no-orders-msg {
+        text-align: center;
+        color: #777;
+        background: white;
+        padding: 35px;
+        border-radius: 10px;
+    }
+
+    .no-orders-msg a {
+        color: #3f6f3f;
+        font-weight: 600;
+    }
+
+
+    /* ================= RESPONSIVE ================= */
+
+    @media (max-width: 600px) {
+
+        .order-detail-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .order-card-top {
+            flex-direction: column;
+        }
+
+    }
+
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+
+<section class="history-page-section">
+
+    <div class="history-page-container">
+
+        <div class="history-page-title">
+
+            <h1>Purchase History</h1>
+
+            <p>
+                All the orders you've placed on FreshRoots
+            </p>
+
+        </div>
+
+
+        <!-- ================= SUMMARY ================= -->
+
+        <div class="history-summary">
+
+            <div>
+                <span>Total Orders</span>
+                <strong>{{ orders|length }}</strong>
+            </div>
+
+            <div>
+                <span>Total Spent (Paid Orders)</span>
+                <strong>₹{{ total_spent }}</strong>
+            </div>
+
+        </div>
+
+
+        <!-- ================= ORDERS ================= -->
+
+        {% if orders %}
+
+            {% for order in orders %}
+
+                <div class="order-card">
+
+                    <div class="order-card-top">
+
+                        <div>
+                            <h3>{{ order.farmer_product.product.name }}</h3>
+                            <p class="order-farm-name">
+                                Sold by {{ order.farmer_product.farm.farm_name }}
+                            </p>
+                        </div>
+
+                        <span class="order-status status-{{ order.status }}">
+                            {{ order.status }}
+                        </span>
+
+                    </div>
+
+
+                    <div class="order-detail-grid">
+
+                        <div class="order-detail-box">
+                            <span>Quantity</span>
+                            <strong>{{ order.quantity }} kg</strong>
+                        </div>
+
+                        <div class="order-detail-box">
+                            <span>Price per kg</span>
+                            <strong>₹{{ order.price_per_unit }}</strong>
+                        </div>
+
+                        <div class="order-detail-box">
+                            <span>Amount Paid</span>
+                            <strong>₹{{ order.total_amount }}</strong>
+                        </div>
+
+                        <div class="order-detail-box">
+                            <span>Order Date</span>
+                            <strong>{{ order.created_at|date:"d M Y, h:i A" }}</strong>
+                        </div>
+
+                    </div>
+
+
+                    <div class="order-address">
+                        <span>Delivered To</span>
+                        {{ order.delivery_address }}
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <div class="no-orders-msg">
+                You haven't purchased anything yet.
+                <a href="{% url 'browse_products' %}">Browse products</a> to get started.
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</section>
+
+{% endblock %}
