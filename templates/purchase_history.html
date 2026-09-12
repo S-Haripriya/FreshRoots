@@ -169,7 +169,106 @@
         font-weight: 600;
     }
 
+.order-tracking {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #eee;
+}
 
+.tracking-label {
+    font-size: 12px;
+    color: #999;
+    display: block;
+    margin-bottom: 6px;
+}
+
+.tracking-current-status {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.status-placed,
+.status-confirmed {
+    background: #fff3d6;
+    color: #946b00;
+}
+
+.status-packed,
+.status-shipped,
+.status-out_for_delivery {
+    background: #e3edfb;
+    color: #2c5aa0;
+}
+
+.status-delivered {
+    background: #e4f4e5;
+    color: #28752e;
+}
+
+.status-cancelled,
+.status-returned {
+    background: #fdeaea;
+    color: #a52a2a;
+}
+
+.delivery-partner-info,
+.delivery-eta {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 6px;
+}
+
+.tracking-timeline {
+    margin-top: 14px;
+    padding-left: 6px;
+}
+
+.timeline-step {
+    display: flex;
+    gap: 12px;
+    padding-bottom: 16px;
+    position: relative;
+}
+
+.timeline-step:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 14px;
+    bottom: 0;
+    width: 2px;
+    background: #ddd;
+}
+
+.timeline-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #3f6f3f;
+    margin-top: 4px;
+    flex-shrink: 0;
+}
+
+.timeline-content strong {
+    display: block;
+    font-size: 14px;
+    color: #244b27;
+}
+
+.timeline-content span {
+    font-size: 12px;
+    color: #999;
+}
+
+.timeline-content p {
+    font-size: 13px;
+    color: #666;
+    margin-top: 4px;
+}
     /* ================= RESPONSIVE ================= */
 
     @media (max-width: 600px) {
@@ -275,6 +374,55 @@
                     <div class="order-address">
                         <span>Delivered To</span>
                         {{ order.delivery_address }}
+                    </div>
+                    <div class="order-tracking">
+
+                        <span class="tracking-label">Delivery Status</span>
+
+                        <div class="tracking-current-status status-{{ order.delivery_status }}">
+                            {{ order.get_delivery_status_display }}
+                        </div>
+
+                        {% if order.delivery_partner %}
+
+                            <p class="delivery-partner-info">
+                                Delivery Partner: {{ order.delivery_partner.name }}
+                                ({{ order.delivery_partner.phone_number }})
+                            </p>
+
+                        {% endif %} 
+
+                        {% if order.estimated_delivery_date %}
+
+                            <p class="delivery-eta">
+                                Estimated Delivery: {{ order.estimated_delivery_date|date:"d M Y" }}
+                            </p>
+
+                        {% endif %}
+
+
+                        <div class="tracking-timeline">
+
+                            {% for update in order.status_updates.all %}
+
+                                <div class="timeline-step">
+
+                                    <div class="timeline-dot"></div>
+
+                                <div class="timeline-content">
+                                    <strong>{{ update.get_status_display }}</strong>
+                                    <span>{{ update.updated_at|date:"d M Y, h:i A" }}</span>
+                                    {% if update.note %}
+                                        <p>{{ update.note }}</p>
+                                    {% endif %}
+                                </div>
+
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
                     </div>
 
                 </div>

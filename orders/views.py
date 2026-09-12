@@ -71,7 +71,7 @@ def confirm_payment(request, order_id):
         price_at_sale=order.price_per_unit,
     )
 
-    messages.success(request, "Payment successful! Your order has been placed.")
+    messages.success(request, "Payment successful! Your order has been placed and being processed.")
     return redirect('order_success', order_id=order.id)
 
 
