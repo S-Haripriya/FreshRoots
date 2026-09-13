@@ -1,9 +1,20 @@
-
-# orders/models.py
-
 from django.db import models
 from django.conf import settings
 from products.models import FarmerProduct
+
+
+class DeliveryPartner(models.Model):
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='delivery_partner_profile'
+    )
+    phone_number = models.CharField(max_length=15)
+    vehicle_number = models.CharField(max_length=20, blank=True)
+    is_approved = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.user.get_full_name() or self.user.username
 
 
 class SaleRecord(models.Model):
@@ -26,17 +37,7 @@ class SaleRecord(models.Model):
         return self.quantity * self.price_at_sale
 
 
-class DeliveryPartner(models.Model):
-        name = models.CharField(max_length=100)
-        phone_number = models.CharField(max_length=15)
-        vehicle_number = models.CharField(max_length=20, blank=True)
-
-        def __str__(self):
-            return self.name
-    
 class Order(models.Model):
-
-    # ================= PAYMENT STATUS =================
 
     STATUS_PENDING = 'pending'
     STATUS_PAID = 'paid'
@@ -49,8 +50,6 @@ class Order(models.Model):
         (STATUS_FAILED, 'Failed'),
         (STATUS_CANCELLED, 'Cancelled'),
     ]
-
-    # ================= DELIVERY STATUS =================
 
     DELIVERY_PLACED = 'placed'
     DELIVERY_CONFIRMED = 'confirmed'
@@ -106,10 +105,6 @@ class Order(models.Model):
 
 
 class OrderStatusUpdate(models.Model):
-    """
-    One row per delivery status change. This is what powers
-    the tracking timeline shown to the customer.
-    """
     order = models.ForeignKey(
         Order, on_delete=models.CASCADE, related_name='status_updates'
     )
@@ -124,9 +119,3 @@ class OrderStatusUpdate(models.Model):
 
     def __str__(self):
         return f"{self.order} — {self.get_status_display()}"
-
-
-    def __str__(self):
-        return f"Order #{self.id} — {self.farmer_product.product.name}"
-
-   

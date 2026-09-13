@@ -33,6 +33,12 @@ def login_view(request):
             # Log the user in
             login(request, user)
 
+            # Delivery partners don't have a UserProfile,
+            # so send them straight to their own dashboard
+            # instead of pages that assume user.userprofile exists.
+            if hasattr(user, 'delivery_partner_profile'):
+                return redirect("delivery_dashboard")
+
             return redirect("home")
 
         # Invalid login

@@ -1,0 +1,352 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    FreshRoots | My Orders
+{% endblock %}
+
+
+{% block extra_css %}
+
+<style>
+
+    .farmer-orders-section {
+        padding: 50px 20px;
+        min-height: 80vh;
+        background: #f7f8f5;
+    }
+
+    .farmer-orders-container {
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    .farmer-orders-title {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .farmer-orders-title h1 {
+        font-size: 32px;
+        margin-bottom: 8px;
+    }
+
+    .farmer-orders-title p {
+        color: #666;
+    }
+
+
+    .message {
+        padding: 14px 18px;
+        border-radius: 7px;
+        margin-bottom: 20px;
+    }
+
+    .message.success {
+        background: #e7f5e8;
+        color: #28632d;
+    }
+
+    .message.error {
+        background: #fdeaea;
+        color: #a52a2a;
+    }
+
+
+    /* ================= ORDER CARDS ================= */
+
+    .forder-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        padding: 22px;
+        margin-bottom: 18px;
+    }
+
+    .forder-card-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 16px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .forder-card-top h3 {
+        font-size: 18px;
+        margin-bottom: 4px;
+    }
+
+    .forder-customer-name {
+        font-size: 13px;
+        color: #888;
+    }
+
+    .forder-status {
+        display: inline-block;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .status-placed,
+    .status-confirmed {
+        background: #fff3d6;
+        color: #946b00;
+    }
+
+    .status-packed,
+    .status-shipped,
+    .status-out_for_delivery {
+        background: #e3edfb;
+        color: #2c5aa0;
+    }
+
+    .status-delivered {
+        background: #e4f4e5;
+        color: #28752e;
+    }
+
+    .status-cancelled,
+    .status-returned {
+        background: #fdeaea;
+        color: #a52a2a;
+    }
+
+
+    .forder-detail-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-bottom: 14px;
+    }
+
+    .forder-detail-box span {
+        display: block;
+        font-size: 12px;
+        color: #888;
+        margin-bottom: 4px;
+    }
+
+    .forder-detail-box strong {
+        font-size: 15px;
+        color: #333;
+    }
+
+    .forder-address {
+        font-size: 13px;
+        color: #666;
+        background: #f5f6f3;
+        padding: 10px 14px;
+        border-radius: 6px;
+        margin-bottom: 16px;
+    }
+
+    .forder-address span {
+        display: block;
+        font-size: 11px;
+        color: #999;
+        margin-bottom: 3px;
+    }
+
+
+    .forder-actions {
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .advance-btn {
+        background: #3f6f3f;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 6px;
+        font-size: 13px;
+        cursor: pointer;
+    }
+
+    .advance-btn:hover {
+        background: #315b31;
+    }
+
+    .no-action-note {
+        font-size: 13px;
+        color: #999;
+        font-style: italic;
+    }
+
+
+    .no-orders-msg {
+        text-align: center;
+        color: #777;
+        background: white;
+        padding: 35px;
+        border-radius: 10px;
+    }
+
+
+    @media (max-width: 600px) {
+
+        .forder-detail-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .forder-card-top {
+            flex-direction: column;
+        }
+
+        .forder-actions {
+            justify-content: stretch;
+        }
+
+        .advance-btn {
+            width: 100%;
+        }
+
+    }
+
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+
+<section class="farmer-orders-section">
+
+    <div class="farmer-orders-container">
+
+        <div class="farmer-orders-title">
+
+            <h1>My Orders</h1>
+
+            <p>
+                Manage and fulfill orders placed for your products
+            </p>
+
+        </div>
+
+
+        {% if messages %}
+
+            {% for message in messages %}
+                <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+
+        {% endif %}
+
+
+        {% if orders %}
+
+            {% for order in orders %}
+
+                <div class="forder-card">
+
+                    <div class="forder-card-top">
+
+                        <div>
+                            <h3>{{ order.farmer_product.product.name }}</h3>
+                            <p class="forder-customer-name">
+                                Ordered by {{ order.customer.first_name }} {{ order.customer.last_name }}
+                            </p>
+                        </div>
+
+                        <span class="forder-status status-{{ order.delivery_status }}">
+                            {{ order.get_delivery_status_display }}
+                        </span>
+
+                    </div>
+
+
+                    <div class="forder-detail-grid">
+
+                        <div class="forder-detail-box">
+                            <span>Quantity</span>
+                            <strong>{{ order.quantity }} kg</strong>
+                        </div>
+
+                        <div class="forder-detail-box">
+                            <span>Price per kg</span>
+                            <strong>₹{{ order.price_per_unit }}</strong>
+                        </div>
+
+                        <div class="forder-detail-box">
+                            <span>Total Amount</span>
+                            <strong>₹{{ order.total_amount }}</strong>
+                        </div>
+
+                        <div class="forder-detail-box">
+                            <span>Order Date</span>
+                            <strong>{{ order.created_at|date:"d M Y, h:i A" }}</strong>
+                        </div>
+
+                    </div>
+
+
+                    <div class="forder-address">
+                        <span>Deliver To</span>
+                        {{ order.delivery_address }}
+                    </div>
+
+
+                    <div class="forder-actions">
+
+                        {% if order.delivery_status in next_status_map %}
+
+                            <form method="POST" action="{% url 'advance_delivery_status' order.id %}">
+
+                                {% csrf_token %}
+
+                                <button type="submit" class="advance-btn">
+                                    Mark as {{ order.get_delivery_status_display }} →
+                                    {% for status_key, next_key in next_status_map.items %}
+                                        {% if status_key == order.delivery_status %}
+                                            {% if next_key == 'confirmed' %}Confirmed
+                                            {% elif next_key == 'packed' %}Packed
+                                            {% elif next_key == 'shipped' %}Shipped
+                                            {% elif next_key == 'out_for_delivery' %}Out for Delivery
+                                            {% endif %}
+                                        {% endif %}
+                                    {% endfor %}
+                                </button>
+
+                            </form>
+
+                        {% else %}
+
+                            <span class="no-action-note">
+                                {% if order.delivery_status == 'delivered' %}
+                                    Delivered — no further action needed.
+                                {% elif order.delivery_status == 'out_for_delivery' %}
+                                    Out for delivery — awaiting delivery confirmation.
+                                {% else %}
+                                    No action available.
+                                {% endif %}
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <div class="no-orders-msg">
+                No orders yet. Once customers purchase your listed products, they'll appear here.
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</section>
+
+{% endblock %}

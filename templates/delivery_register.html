@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}FreshRoots | Delivery Partner Signup{% endblock %}
+
+{% block content %}
+
+<section style="padding: 60px 20px; display:flex; justify-content:center;">
+
+    <div style="background:white; max-width:420px; width:100%; padding:35px; border-radius:12px; box-shadow:0 3px 12px rgba(0,0,0,0.08);">
+
+        <h2 style="margin-bottom: 20px;">Become a Delivery Partner</h2>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div style="padding:12px; border-radius:6px; margin-bottom:15px; background:#fdeaea; color:#a52a2a;">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div style="margin-bottom:15px;">
+                <label>Email</label>
+                <input type="email" name="email" required style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px;">
+            </div>
+
+            <div style="margin-bottom:15px;">
+                <label>Password</label>
+                <input type="password" name="password" required style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px;">
+            </div>
+
+            <div style="margin-bottom:15px;">
+                <label>Phone Number</label>
+                <input type="text" name="phone_number" required style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px;">
+            </div>
+
+            <div style="margin-bottom:20px;">
+                <label>Vehicle Number (optional)</label>
+                <input type="text" name="vehicle_number" style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px;">
+            </div>
+
+            <button type="submit" style="width:100%; background:#3f6f3f; color:white; border:none; padding:13px; border-radius:7px; cursor:pointer;">
+                Register
+            </button>
+
+        </form>
+
+    </div>
+
+</section>
+
+{% endblock %}

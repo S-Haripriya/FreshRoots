@@ -34,7 +34,9 @@ class OrderAdmin(admin.ModelAdmin):
 
 @admin.register(DeliveryPartner)
 class DeliveryPartnerAdmin(admin.ModelAdmin):
-    list_display = ['name', 'phone_number', 'vehicle_number']
+    list_display = ['user', 'phone_number', 'vehicle_number', 'is_approved']
+    list_editable = ['is_approved']
+    search_fields = ['user__username', 'phone_number']
 
 
 @admin.register(SaleRecord)

@@ -1,4 +1,3 @@
-
 {% load static %}
 
 
@@ -36,20 +35,49 @@
                 Browse Products
             </a>
 
-            <a href="{% url 'profile' %}">
-                Profile
-            </a>
+
+            <!--
+                Delivery partner accounts have no UserProfile,
+                so only show Profile/My Products/My Orders
+                when a UserProfile actually exists.
+            -->
+
+            {% if user.userprofile %}
+
+                <a href="{% url 'profile' %}">
+                    Profile
+                </a>
+
+
+                <!--
+                    Display My Products / My Orders only when
+                    the logged-in user is a verified producer.
+                -->
+
+                {% if user.userprofile.is_verified_producer %}
+
+                    <a href="{% url 'my_products' %}">
+                        My Products
+                    </a>
+
+                    <a href="{% url 'farmer_orders' %}">
+                        My Orders
+                    </a>
+
+                {% endif %}
+
+            {% endif %}
 
 
             <!--
-                Display Your Products only when
-                the logged-in user is a verified producer.
+                Delivery Dashboard link only for users who
+                have a linked DeliveryPartner profile.
             -->
 
-            {% if user.userprofile.is_verified_producer %}
+            {% if user.delivery_partner_profile %}
 
-                <a href="{% url 'my_products' %}">
-                    My Products
+                <a href="{% url 'delivery_dashboard' %}">
+                    Delivery Dashboard
                 </a>
 
             {% endif %}
@@ -75,4 +103,3 @@
     </nav>
 
 </header>
-
