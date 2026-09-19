@@ -1,6 +1,5 @@
 from django.contrib import admin
-from .models import Order, OrderStatusUpdate, DeliveryPartner, SaleRecord
-
+from .models import Order, OrderStatusUpdate, DeliveryPartner, SaleRecord,Cart, CartItem
 
 class OrderStatusUpdateInline(admin.TabularInline):
     model = OrderStatusUpdate
@@ -43,3 +42,21 @@ class DeliveryPartnerAdmin(admin.ModelAdmin):
 class SaleRecordAdmin(admin.ModelAdmin):
     list_display = ['farmer_product', 'buyer', 'quantity', 'price_at_sale', 'sold_at']
     list_filter = ['sold_at']
+
+
+class CartItemInline(admin.TabularInline):
+    model = CartItem
+    extra = 0
+    readonly_fields = ['farmer_product', 'quantity', 'added_at']
+    can_delete = False
+
+
+@admin.register(Cart)
+class CartAdmin(admin.ModelAdmin):
+    list_display = ['customer', 'total_items', 'total_amount', 'created_at']
+    search_fields = ['customer__username', 'customer__email']
+    inlines = [CartItemInline]
+    readonly_fields = ['customer', 'created_at']
+
+    def has_add_permission(self, request):
+        return False   # carts are created automatically, not manually by admin    

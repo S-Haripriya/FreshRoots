@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}FreshRoots | Order Confirmed{% endblock %}
+
+{% block content %}
+
+<section style="padding: 70px 20px; min-height: 60vh;">
+
+    <div style="max-width: 600px; margin: 0 auto; text-align: center;">
+
+        <h1 style="color: #244b27;">Order Confirmed!</h1>
+
+        <p style="color: #666; margin: 15px 0 30px;">
+            Thank you for your purchase. Here's a summary of your order.
+        </p>
+
+    </div>
+
+    <div style="max-width: 600px; margin: 0 auto;">
+
+        {% for order in orders %}
+
+            <div style="background:white; padding:18px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.06); margin-bottom:12px; display:flex; justify-content:space-between;">
+                <div>
+                    <strong>{{ order.farmer_product.product.name }}</strong>
+                    <p style="color:#888; font-size:13px; margin-top:4px;">
+                        {{ order.farmer_product.farm.farm_name }} — {{ order.quantity }} kg
+                    </p>
+                </div>
+                <strong style="color:#244b27;">₹{{ order.total_amount }}</strong>
+            </div>
+
+        {% endfor %}
+
+        <div style="text-align:right; font-size:18px; font-weight:700; color:#244b27; margin-top:15px;">
+            Total Paid: ₹{{ total_amount }}
+        </div>
+
+        <div style="text-align:center; margin-top:30px;">
+            <a href="{% url 'browse_products' %}"
+               style="display:inline-block; background:#3f6f3f; color:white; padding:12px 25px; border-radius:6px; text-decoration:none;">
+                Continue Shopping
+            </a>
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

@@ -101,7 +101,27 @@
         padding-right: 48px;
     }
 
+    /* ================= FORGOT PASSWORD ================= */
 
+    .forgot-password {
+        text-align: right;
+        margin-top: 8px;
+        margin-bottom: 22px;
+    }
+
+
+    .forgot-password a {
+        color: #588157;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+
+    .forgot-password a:hover {
+        text-decoration: underline;
+        color: #3f6b3d;
+    }
     .toggle-password {
         position: absolute;
         right: 12px;
@@ -295,6 +315,12 @@
 
                 </div>
 
+                <p class="forgot-password">
+                    <a href="{% url 'password_reset' %}">
+                        Forgot password?
+                    </a>
+                </p>
+                
             </div>
 
 

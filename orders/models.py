@@ -77,7 +77,8 @@ class Order(models.Model):
     farmer_product = models.ForeignKey(
         FarmerProduct, on_delete=models.CASCADE, related_name='orders'
     )
-
+    # Add inside Order, alongside your other fields
+    cart_checkout_id = models.CharField(max_length=64, blank=True, db_index=True)
     quantity = models.PositiveIntegerField()
     price_per_unit = models.DecimalField(max_digits=10, decimal_places=2)
     total_amount = models.DecimalField(max_digits=12, decimal_places=2)
@@ -119,3 +120,38 @@ class OrderStatusUpdate(models.Model):
 
     def __str__(self):
         return f"{self.order} — {self.get_status_display()}"
+
+
+class Cart(models.Model):
+    customer = models.OneToOneField(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='cart'
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Cart — {self.customer.username}"
+
+    @property
+    def total_amount(self):
+        return sum(item.subtotal for item in self.items.all())
+
+    @property
+    def total_items(self):
+        return sum(item.quantity for item in self.items.all())
+
+
+class CartItem(models.Model):
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
+    farmer_product = models.ForeignKey(FarmerProduct, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+    added_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('cart', 'farmer_product')
+
+    def __str__(self):
+        return f"{self.quantity} x {self.farmer_product.product.name}"
+
+    @property
+    def subtotal(self):
+        return self.quantity * self.farmer_product.price

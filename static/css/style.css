@@ -377,7 +377,75 @@ main {
 /* =========================================================
    FRESHROOTS HOME PAGE
    ========================================================= */
+/* ================= NAVBAR DROPDOWN ================= */
 
+.navbar-dropdown {
+    position: relative;
+}
+
+.navbar-dropdown-toggle {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.navbar-dropdown-toggle:hover {
+    background-color: #1b5e20;
+}
+
+.navbar-dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: white;
+    min-width: 180px;
+    border-radius: 8px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    padding: 8px 0;
+    z-index: 1001;
+    margin-top: 6px;
+}
+
+.navbar-dropdown-menu.show {
+    display: block;
+}
+
+.navbar-dropdown-menu a {
+    display: block;
+    color: #333 !important;
+    padding: 10px 18px;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 0;
+}
+
+.navbar-dropdown-menu a:hover {
+    background-color: #f0f5ef;
+    color: #244b27 !important;
+    transform: none;
+}
+
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 768px) {
+
+    .navbar-dropdown-menu {
+        position: static;
+        box-shadow: none;
+        margin-top: 0;
+        padding-left: 10px;
+    }
+
+}
 
 /* =========================================================
    HERO SECTION

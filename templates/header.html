@@ -11,10 +11,8 @@
         <div class="navbar-logo">
 
             <a href="{% url 'home' %}">
-
                 <img src="{% static 'images/logo/freshroots-logo.png' %}"
                      alt="FreshRoots">
-
             </a>
 
         </div>
@@ -36,43 +34,46 @@
             </a>
 
 
-            <!--
-                Delivery partner accounts have no UserProfile,
-                so only show Profile/My Products/My Orders
-                when a UserProfile actually exists.
-            -->
-
             {% if user.userprofile %}
+
+                <a href="{% url 'view_cart' %}">
+                    Cart
+                </a>
+
+
+                <!-- ================= FARMER DROPDOWN ================= -->
+
+                {% if user.userprofile.is_verified_producer %}
+
+                    <div class="navbar-dropdown">
+
+                        <button type="button" class="navbar-dropdown-toggle">
+                            My Business ▾
+                        </button>
+
+                        <div class="navbar-dropdown-menu">
+
+                            <a href="{% url 'my_products' %}">
+                                My Products
+                            </a>
+
+                            <a href="{% url 'farmer_orders' %}">
+                                My Orders
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                {% endif %}
+
 
                 <a href="{% url 'profile' %}">
                     Profile
                 </a>
 
-
-                <!--
-                    Display My Products / My Orders only when
-                    the logged-in user is a verified producer.
-                -->
-
-                {% if user.userprofile.is_verified_producer %}
-
-                    <a href="{% url 'my_products' %}">
-                        My Products
-                    </a>
-
-                    <a href="{% url 'farmer_orders' %}">
-                        My Orders
-                    </a>
-
-                {% endif %}
-
             {% endif %}
 
-
-            <!--
-                Delivery Dashboard link only for users who
-                have a linked DeliveryPartner profile.
-            -->
 
             {% if user.delivery_partner_profile %}
 

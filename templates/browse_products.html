@@ -275,7 +275,25 @@
         background: #ddd;
     }
 
+.add-to-cart-form {
+    margin-top: 8px;
+}
 
+.add-cart-btn {
+    width: 100%;
+    background: #e8f5e9;
+    color: #244b27;
+    border: 1px solid #a5c6a6;
+    padding: 9px 8px;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.add-cart-btn:hover {
+    background: #d4ecd6;
+}
     /* ================= FARM DETAILS MODAL TEXT ================= */
 
     .farm-detail-row {
@@ -419,6 +437,13 @@
                                 </button>
 
                             </div>
+                            <form method="POST" action="{% url 'add_to_cart' listing.id %}" class="add-to-cart-form">
+                                {% csrf_token %}
+                                <input type="hidden" name="quantity" value="1">
+                                <button type="submit" class="add-cart-btn">
+                                    Add to Cart
+                                </button>
+                            </form>
 
                         </div>
 

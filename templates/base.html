@@ -121,7 +121,29 @@
 
     {% block extra_js %}
     {% endblock %}
+<script>
 
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const dropdownToggle = document.querySelector(".navbar-dropdown-toggle");
+        const dropdownMenu = document.querySelector(".navbar-dropdown-menu");
+
+        if (dropdownToggle && dropdownMenu) {
+
+            dropdownToggle.addEventListener("click", function (e) {
+                e.stopPropagation();
+                dropdownMenu.classList.toggle("show");
+            });
+
+            document.addEventListener("click", function () {
+                dropdownMenu.classList.remove("show");
+            });
+
+        }
+
+    });
+
+</script>
 </body>
 
 </html>

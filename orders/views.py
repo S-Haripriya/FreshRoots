@@ -6,9 +6,9 @@ from django.contrib.auth.hashers import make_password
 
 from userprofile.models import GetCertified
 from products.models import FarmerProduct
-from .models import Order, SaleRecord, DeliveryPartner
+from .models import Order, SaleRecord, DeliveryPartner, Cart, CartItem
 
-
+import uuid
 # =========================================================
 # CUSTOMER CHECKOUT
 # =========================================================
@@ -326,3 +326,244 @@ def mark_delivered(request, order_id):
 
     messages.success(request, f"Order #{order.id} marked as delivered.")
     return redirect('delivery_dashboard')
+
+# =========================================================
+# SHOPPING CART
+# =========================================================
+
+@login_required
+def view_cart(request):
+    cart, _ = Cart.objects.get_or_create(customer=request.user)
+
+    items = cart.items.select_related(
+        'farmer_product__product', 'farmer_product__farm'
+    )
+
+    context = {
+        "cart": cart,
+        "items": items,
+    }
+
+    return render(request, 'cart.html', context)
+
+
+@login_required
+def add_to_cart(request, listing_id):
+    if request.method != "POST":
+        return redirect('browse_products')
+
+    listing = get_object_or_404(FarmerProduct, id=listing_id, is_active=True)
+
+    quantity = request.POST.get('quantity')
+
+    if not quantity or not quantity.isdigit() or int(quantity) <= 0:
+        messages.error(request, "Please enter a valid quantity.")
+        return redirect('browse_products')
+
+    quantity = int(quantity)
+
+    if quantity > listing.remaining:
+        messages.error(
+            request,
+            f"Only {listing.remaining} kg of {listing.product.name} available."
+        )
+        return redirect('browse_products')
+
+    cart, _ = Cart.objects.get_or_create(customer=request.user)
+
+    item, created = CartItem.objects.get_or_create(
+        cart=cart,
+        farmer_product=listing,
+        defaults={"quantity": quantity}
+    )
+
+    if not created:
+        new_quantity = item.quantity + quantity
+        if new_quantity > listing.remaining:
+            messages.error(
+                request,
+                f"Only {listing.remaining} kg of {listing.product.name} available. "
+                f"You already have {item.quantity} kg in your cart."
+            )
+            return redirect('browse_products')
+
+        item.quantity = new_quantity
+        item.save(update_fields=['quantity'])
+
+    messages.success(request, f"{listing.product.name} added to your cart.")
+    return redirect('browse_products')
+
+
+@login_required
+def update_cart_item(request, item_id):
+    if request.method != "POST":
+        return redirect('view_cart')
+
+    item = get_object_or_404(CartItem, id=item_id, cart__customer=request.user)
+
+    quantity = request.POST.get('quantity')
+
+    if not quantity or not quantity.isdigit() or int(quantity) <= 0:
+        messages.error(request, "Please enter a valid quantity.")
+        return redirect('view_cart')
+
+    quantity = int(quantity)
+
+    if quantity > item.farmer_product.remaining:
+        messages.error(
+            request,
+            f"Only {item.farmer_product.remaining} kg of "
+            f"{item.farmer_product.product.name} available."
+        )
+        return redirect('view_cart')
+
+    item.quantity = quantity
+    item.save(update_fields=['quantity'])
+
+    messages.success(request, "Cart updated.")
+    return redirect('view_cart')
+
+
+@login_required
+def remove_cart_item(request, item_id):
+    if request.method != "POST":
+        return redirect('view_cart')
+
+    item = get_object_or_404(CartItem, id=item_id, cart__customer=request.user)
+    product_name = item.farmer_product.product.name
+    item.delete()
+
+    messages.success(request, f"{product_name} removed from your cart.")
+    return redirect('view_cart')
+
+@login_required
+def checkout_cart(request):
+    if request.method != "POST":
+        return redirect('view_cart')
+
+    cart, _ = Cart.objects.get_or_create(customer=request.user)
+    items = list(cart.items.select_related('farmer_product__product', 'farmer_product__farm'))
+
+    if not items:
+        messages.error(request, "Your cart is empty.")
+        return redirect('view_cart')
+
+    delivery_address = request.POST.get('delivery_address')
+
+    if not delivery_address or not delivery_address.strip():
+        messages.error(request, "Please enter a delivery address.")
+        return redirect('view_cart')
+
+    delivery_address = delivery_address.strip()
+
+    # Re-validate stock before showing the payment screen
+    for item in items:
+        if item.quantity > item.farmer_product.remaining:
+            messages.error(
+                request,
+                f"Only {item.farmer_product.remaining} kg of "
+                f"{item.farmer_product.product.name} available. Please update your cart."
+            )
+            return redirect('view_cart')
+
+    checkout_id = uuid.uuid4().hex
+
+    # Nothing is created yet — just remember this checkout attempt.
+    # The cart itself is left completely untouched.
+    request.session['pending_checkout_id'] = checkout_id
+    request.session['pending_delivery_address'] = delivery_address
+
+    total_amount = sum(item.subtotal for item in items)
+
+    return render(request, 'cart_payment_checkout.html', {
+        "items": items,
+        "checkout_id": checkout_id,
+        "total_amount": total_amount,
+    })
+
+
+@login_required
+def confirm_cart_payment(request, checkout_id):
+    if request.method != "POST":
+        return redirect('view_cart')
+
+    # Make sure this is the same checkout the user actually started —
+    # protects against replaying a stale/abandoned payment page.
+    if request.session.get('pending_checkout_id') != checkout_id:
+        messages.error(request, "This checkout session has expired. Please try again.")
+        return redirect('view_cart')
+
+    delivery_address = request.session.get('pending_delivery_address')
+
+    cart, _ = Cart.objects.get_or_create(customer=request.user)
+    items = list(cart.items.select_related('farmer_product__product', 'farmer_product__farm'))
+
+    if not items:
+        messages.error(request, "Your cart is empty.")
+        return redirect('view_cart')
+
+    # Re-validate stock one last time, since time has passed
+    for item in items:
+        if item.quantity > item.farmer_product.remaining:
+            messages.error(
+                request,
+                f"Only {item.farmer_product.remaining} kg of "
+                f"{item.farmer_product.product.name} available. Please update your cart."
+            )
+            return redirect('view_cart')
+
+    created_orders = []
+
+    for item in items:
+        order = Order.objects.create(
+            customer=request.user,
+            farmer_product=item.farmer_product,
+            quantity=item.quantity,
+            price_per_unit=item.farmer_product.price,
+            total_amount=item.subtotal,
+            delivery_address=delivery_address,
+            cart_checkout_id=checkout_id,
+        )
+        order.status = Order.STATUS_PAID
+        order.save(update_fields=['status'])
+
+        SaleRecord.objects.create(
+            farmer_product=order.farmer_product,
+            buyer=order.customer,
+            quantity=order.quantity,
+            price_at_sale=order.price_per_unit,
+        )
+
+        created_orders.append(order)
+
+    # Only now, after successful "payment", clear the cart
+    cart.items.all().delete()
+
+    del request.session['pending_checkout_id']
+    del request.session['pending_delivery_address']
+
+    messages.success(
+        request,
+        "Payment successful! Your order has been placed and is being processed."
+    )
+    return redirect('cart_order_success', checkout_id=checkout_id)
+
+
+@login_required
+def cart_order_success(request, checkout_id):
+    orders = Order.objects.filter(
+        cart_checkout_id=checkout_id,
+        customer=request.user
+    ).select_related('farmer_product__product', 'farmer_product__farm')
+
+    if not orders.exists():
+        return redirect('browse_products')
+
+    total_amount = sum(o.total_amount for o in orders)
+
+    context = {
+        "orders": orders,
+        "total_amount": total_amount,
+    }
+
+    return render(request, 'cart_order_success.html', context)
