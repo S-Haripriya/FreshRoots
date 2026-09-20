@@ -3,11 +3,22 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from .models import UserProfile
-
+from django.db.models import F
+from products.models import FarmerProduct
 
 
 def home(request):
-    return render(request, 'home.html')
+    featured_listings = FarmerProduct.objects.filter(
+        is_active=True
+    ).filter(
+        sold_quantity__lt=F('quantity')
+    ).select_related('product', 'farm').order_by('-created_at')[:6]
+
+    context = {
+        "featured_listings": featured_listings,
+    }
+
+    return render(request, 'home.html', context)
 
 
 def about(request):

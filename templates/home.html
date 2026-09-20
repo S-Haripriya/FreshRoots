@@ -5,6 +5,134 @@
 FreshRoots | Home
 {% endblock %}
 
+{% block extra_css %}
+
+<style>
+
+    /* ================= FRESH THIS WEEK ================= */
+
+    .featured-section {
+        padding: 100px 6%;
+        background-color: #ffffff;
+    }
+
+    .featured-container {
+        max-width: 1000px;
+        margin: 60px auto 0;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 28px;
+    }
+
+    .featured-card {
+        background-color: white;
+        border-radius: 14px;
+        overflow: hidden;
+        border: 1px solid #e4eee4;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .featured-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 15px 35px rgba(46, 125, 50, 0.12);
+    }
+
+    .featured-card-image {
+        width: 100%;
+        height: 200px;
+        background: #eef2ec;
+        overflow: hidden;
+    }
+
+    .featured-card-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .featured-card-body {
+        padding: 22px;
+    }
+
+    .featured-card-body h3 {
+        color: #244b27;
+        font-size: 19px;
+        margin-bottom: 6px;
+    }
+
+    .featured-farm-name {
+        color: #888;
+        font-size: 13px;
+        margin-bottom: 14px;
+    }
+
+    .featured-price-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .featured-price {
+        color: #2e7d32;
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+    .featured-view-link {
+        display: inline-block;
+        background: #f0f5ef;
+        color: #244b27;
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 600;
+        transition: background-color 0.3s ease;
+    }
+
+    .featured-view-link:hover {
+        background: #dce9db;
+    }
+
+    .featured-empty-msg {
+        text-align: center;
+        color: #888;
+        margin-top: 50px;
+        font-size: 16px;
+    }
+
+    .featured-cta {
+        text-align: center;
+        margin-top: 50px;
+    }
+
+
+    /* ================= RESPONSIVE ================= */
+
+    @media (max-width: 900px) {
+
+        .featured-container {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+    }
+
+    @media (max-width: 600px) {
+
+        .featured-container {
+            grid-template-columns: 1fr;
+        }
+
+        .featured-section {
+            padding: 75px 7%;
+        }
+
+    }
+
+</style>
+
+{% endblock %}
+
 {% block content %}
 
 <!-- ================= HERO SECTION ================= -->
@@ -29,7 +157,7 @@ FreshRoots | Home
                 sourced directly from trusted farmers.
             </p>
 
-            <a href="#" class="hero-btn">
+            <a href="{% url 'browse_products' %}" class="hero-btn">
                 Explore Fresh Products
             </a>
 
@@ -62,6 +190,95 @@ FreshRoots | Home
         </p>
 
     </div>
+
+</section>
+
+
+<!-- ================= FRESH THIS WEEK ================= -->
+
+<section class="featured-section">
+
+    <div class="section-heading">
+
+        <span class="section-tag">
+            FRESH THIS WEEK
+        </span>
+
+        <h2>
+            Straight from our farmers
+        </h2>
+
+        <p>
+            A look at what's available right now, listed by
+            real, verified farmers on FreshRoots.
+        </p>
+
+    </div>
+
+
+    {% if featured_listings %}
+
+        <div class="featured-container">
+
+            {% for listing in featured_listings %}
+
+                <div class="featured-card">
+
+                    <div class="featured-card-image">
+
+                        {% if listing.image %}
+                            <img src="{{ listing.image.url }}" alt="{{ listing.product.name }}">
+                        {% else %}
+                            <img src="{% static 'images/default-product.png' %}" alt="No image">
+                        {% endif %}
+
+                    </div>
+
+                    <div class="featured-card-body">
+
+                        <h3>{{ listing.product.name }}</h3>
+
+                        <p class="featured-farm-name">
+                            {{ listing.farm.farm_name }}
+                        </p>
+
+                        <div class="featured-price-row">
+
+                            <span class="featured-price">
+                                ₹{{ listing.price }}/kg
+                            </span>
+
+                            <a href="{% url 'browse_products' %}" class="featured-view-link">
+                                View
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+
+        <div class="featured-cta">
+
+            <a href="{% url 'browse_products' %}" class="hero-btn"
+               style="background-color: #2e7d32; color: white;">
+                See All Products
+            </a>
+
+        </div>
+
+    {% else %}
+
+        <p class="featured-empty-msg">
+            New listings are coming soon — check back shortly!
+        </p>
+
+    {% endif %}
 
 </section>
 
@@ -303,7 +520,7 @@ FreshRoots | Home
             who grow them.
         </p>
 
-        <a href="#" class="hero-btn">
+        <a href="{% url 'browse_products' %}" class="hero-btn">
             Explore Fresh Products
         </a>
 
