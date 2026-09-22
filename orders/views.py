@@ -105,6 +105,7 @@ def confirm_payment(request, checkout_id):
         buyer=order.customer,
         quantity=order.quantity,
         price_at_sale=order.price_per_unit,
+        order=order,
     )
 
     del request.session['pending_buy_now']
@@ -151,6 +152,11 @@ def purchase_history(request):
     context = {
         "orders": orders,
         "total_spent": total_spent,
+        "cancellable_statuses": [
+            Order.DELIVERY_PLACED,
+            Order.DELIVERY_CONFIRMED,
+            Order.DELIVERY_PACKED,
+        ],
     }
 
     return render(request, 'purchase_history.html', context)
@@ -561,6 +567,7 @@ def confirm_cart_payment(request, checkout_id):
             buyer=order.customer,
             quantity=order.quantity,
             price_at_sale=order.price_per_unit,
+            order=order,
         )
 
         created_orders.append(order)
@@ -596,3 +603,43 @@ def cart_order_success(request, checkout_id):
     }
 
     return render(request, 'cart_order_success.html', context)
+
+
+@login_required
+def cancel_paid_order(request, order_id):
+    if request.method != "POST":
+        return redirect('purchase_history')
+
+    order = get_object_or_404(
+        Order, id=order_id, customer=request.user, status=Order.STATUS_PAID
+    )
+
+    cancellable_stages = [
+        Order.DELIVERY_PLACED,
+        Order.DELIVERY_CONFIRMED,
+        Order.DELIVERY_PACKED,
+    ]
+
+    if order.delivery_status not in cancellable_stages:
+        messages.error(
+            request,
+            "This order can no longer be cancelled — it has already been shipped."
+        )
+        return redirect('purchase_history')
+
+    # Reverse the farmer's stock and earnings
+    fp = order.farmer_product
+    fp.sold_quantity = max(0, fp.sold_quantity - order.quantity)
+    fp.money_earned = max(0, fp.money_earned - order.total_amount)
+    fp.save(update_fields=['sold_quantity', 'money_earned'])
+
+    # Remove the linked sale record, since this is no longer an actual sale
+    if hasattr(order, 'sale_record') and order.sale_record:
+        order.sale_record.delete()
+
+    order.status = Order.STATUS_CANCELLED
+    order.delivery_status = Order.DELIVERY_CANCELLED
+    order.save(update_fields=['status', 'delivery_status'])
+
+    messages.success(request, f"Order #{order.id} has been cancelled.")
+    return redirect('purchase_history')

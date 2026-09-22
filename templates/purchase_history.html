@@ -342,6 +342,22 @@
                         <span class="order-status status-{{ order.status }}">
                             {{ order.status }}
                         </span>
+                        {% if order.status == 'paid' and order.delivery_status in cancellable_statuses %}
+
+    <form method="POST" action="{% url 'cancel_paid_order' order.id %}"
+          onsubmit="return confirm('Cancel this order? This cannot be undone.');"
+          style="margin-top: 14px;">
+
+        {% csrf_token %}
+
+        <button type="submit"
+                style="background: transparent; border: 1px solid #d9736c; color: #a52a2a; padding: 9px 18px; border-radius: 6px; font-size: 13px; cursor: pointer;">
+            Cancel Order
+        </button>
+
+    </form>
+
+{% endif %}
 
                     </div>
 
