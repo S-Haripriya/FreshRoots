@@ -83,35 +83,35 @@
 
         <div class="payment-summary-row">
             <span>Product</span>
-            <strong>{{ order.farmer_product.product.name }}</strong>
+            <strong>{{ listing.product.name }}</strong>
         </div>
 
         <div class="payment-summary-row">
             <span>Quantity</span>
-            <strong>{{ order.quantity }} kg</strong>
+            <strong>{{ quantity }} kg</strong>
         </div>
 
         <div class="payment-summary-row">
             <span>Price per kg</span>
-            <strong>₹{{ order.price_per_unit }}</strong>
+            <strong>₹{{ listing.price }}</strong>
         </div>
 
         <div class="payment-summary-row">
             <span>Delivery to</span>
-            <strong>{{ order.delivery_address|truncatechars:40 }}</strong>
+            <strong>{{ delivery_address|truncatechars:40 }}</strong>
         </div>
 
         <div class="payment-total-row">
             <span>Total</span>
-            <span>₹{{ order.total_amount }}</span>
+            <span>₹{{ total_amount }}</span>
         </div>
 
-        <form method="POST" action="{% url 'confirm_payment' order.id %}">
+        <form method="POST" action="{% url 'confirm_payment' checkout_id %}">
 
             {% csrf_token %}
 
             <button type="submit" class="pay-now-btn">
-                Pay ₹{{ order.total_amount }}
+                Pay ₹{{ total_amount }}
             </button>
 
         </form>

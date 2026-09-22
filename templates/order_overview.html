@@ -1,0 +1,211 @@
+
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}FreshRoots | Order Overview{% endblock %}
+
+{% block extra_css %}
+<style>
+
+    .orders-section { padding: 50px 20px; min-height: 80vh; background: #f7f8f5; }
+    .orders-container { max-width: 1300px; margin: 0 auto; }
+    .orders-title { text-align: center; margin-bottom: 25px; }
+    .orders-title h1 { font-size: 32px; margin-bottom: 8px; }
+    .orders-title p { color: #666; }
+
+    .back-link { display: inline-block; margin-bottom: 20px; color: #3f6f3f; font-weight: 600; }
+
+    .summary-row {
+        display: flex; gap: 15px; margin-bottom: 25px; flex-wrap: wrap;
+    }
+
+    .summary-card {
+        background: white; padding: 18px 22px; border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06); flex: 1; min-width: 160px;
+    }
+
+    .summary-card span { display: block; font-size: 12px; color: #888; margin-bottom: 5px; }
+    .summary-card strong { font-size: 20px; color: #244b27; }
+
+    .filter-bar {
+        background: white; padding: 18px 20px; border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 20px;
+        display: flex; gap: 15px; flex-wrap: wrap; align-items: end;
+    }
+
+    .filter-group label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 6px; color: #555; }
+    .filter-group select {
+        padding: 9px 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 13px; min-width: 160px;
+    }
+
+    .filter-btn, .clear-filter-btn {
+        padding: 9px 18px; border-radius: 6px; font-size: 13px; cursor: pointer; border: none;
+    }
+
+    .filter-btn { background: #3f6f3f; color: white; }
+    .filter-btn:hover { background: #315b31; }
+
+    .clear-filter-btn { background: #eee; color: #555; text-decoration: none; display: inline-block; }
+    .clear-filter-btn:hover { background: #ddd; }
+
+    .orders-table {
+        width: 100%; border-collapse: collapse; background: white; border-radius: 10px;
+        overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06); font-size: 13px;
+    }
+
+    .orders-table th, .orders-table td {
+        text-align: left; padding: 12px 14px; border-bottom: 1px solid #eee;
+    }
+
+    .orders-table th { background: #f5f6f3; font-weight: 600; color: #444; }
+    .orders-table tr:last-child td { border-bottom: none; }
+
+    .status-badge {
+        display: inline-block; padding: 4px 11px; border-radius: 20px;
+        font-size: 11px; font-weight: 600; white-space: nowrap;
+    }
+
+    .status-pending, .status-placed, .status-confirmed { background: #fff3d6; color: #946b00; }
+    .status-paid, .status-delivered { background: #e4f4e5; color: #28752e; }
+    .status-packed, .status-shipped, .status-out_for_delivery { background: #e3edfb; color: #2c5aa0; }
+    .status-failed, .status-cancelled, .status-returned { background: #fdeaea; color: #a52a2a; }
+
+    .empty-msg { text-align: center; color: #888; padding: 35px; background: white; border-radius: 10px; }
+
+    @media (max-width: 900px) {
+        .orders-table { display: block; overflow-x: auto; white-space: nowrap; }
+    }
+
+</style>
+{% endblock %}
+
+{% block content %}
+
+<section class="orders-section">
+    <div class="orders-container">
+
+        <a href="{% url 'admin_dashboard' %}" class="back-link">← Back to Admin Dashboard</a>
+
+        <div class="orders-title">
+            <h1>Order Overview</h1>
+            <p>All orders placed across the FreshRoots platform</p>
+        </div>
+
+
+        <div class="summary-row">
+
+            <div class="summary-card">
+                <span>Orders Shown</span>
+                <strong>{{ total_orders }}</strong>
+            </div>
+
+            <div class="summary-card">
+                <span>Revenue (Paid Orders Shown)</span>
+                <strong>₹{{ total_revenue }}</strong>
+            </div>
+
+        </div>
+
+
+        <form method="GET" class="filter-bar">
+
+            <div class="filter-group">
+                <label for="status">Payment Status</label>
+                <select name="status" id="status">
+                    <option value="">All</option>
+                    {% for value, label in status_choices %}
+                        <option value="{{ value }}" {% if status_filter == value %}selected{% endif %}>
+                            {{ label }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="delivery_status">Delivery Status</label>
+                <select name="delivery_status" id="delivery_status">
+                    <option value="">All</option>
+                    {% for value, label in delivery_status_choices %}
+                        <option value="{{ value }}" {% if delivery_filter == value %}selected{% endif %}>
+                            {{ label }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button type="submit" class="filter-btn">Apply Filters</button>
+
+            {% if status_filter or delivery_filter %}
+                <a href="{% url 'order_overview' %}" class="clear-filter-btn">Clear Filters</a>
+            {% endif %}
+
+        </form>
+
+
+        {% if orders %}
+
+            <table class="orders-table">
+
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Product</th>
+                        <th>Farm</th>
+                        <th>Qty</th>
+                        <th>Total</th>
+                        <th>Payment</th>
+                        <th>Delivery</th>
+                        <th>Delivery Partner</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for order in orders %}
+
+                        <tr>
+                            <td>#{{ order.id }}</td>
+                            <td>{{ order.customer.first_name }} {{ order.customer.last_name }}</td>
+                            <td>{{ order.farmer_product.product.name }}</td>
+                            <td>{{ order.farmer_product.farm.farm_name }}</td>
+                            <td>{{ order.quantity }} kg</td>
+                            <td>₹{{ order.total_amount }}</td>
+                            <td>
+                                <span class="status-badge status-{{ order.status }}">
+                                    {{ order.get_status_display }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="status-badge status-{{ order.delivery_status }}">
+                                    {{ order.get_delivery_status_display }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if order.delivery_partner %}
+                                    {{ order.delivery_partner.user.first_name }} {{ order.delivery_partner.user.last_name }}
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
+                            <td>{{ order.created_at|date:"d M Y, h:i A" }}</td>
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        {% else %}
+
+            <div class="empty-msg">No orders match the selected filters.</div>
+
+        {% endif %}
+
+    </div>
+</section>
+
+{% endblock %}

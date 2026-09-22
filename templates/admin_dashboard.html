@@ -1,0 +1,309 @@
+{% extends 'base.html' %}
+
+{% block title %}FreshRoots | Admin Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+
+    .dash-section { padding: 50px 20px; min-height: 80vh; background: #f7f8f5; }
+    .dash-container { max-width: 1100px; margin: 0 auto; }
+    .dash-title { text-align: center; margin-bottom: 30px; }
+    .dash-title h1 { font-size: 32px; margin-bottom: 8px; }
+    .dash-title p { color: #666; }
+
+    .message { padding: 14px 18px; border-radius: 7px; margin-bottom: 20px; }
+    .message.success { background: #e7f5e8; color: #28632d; }
+    .message.info { background: #e3edfb; color: #2c5aa0; }
+
+    .dash-tabs { display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; }
+
+    .dash-tab-btn {
+        background: white; border: 1px solid #ddd; padding: 10px 18px; border-radius: 7px;
+        cursor: pointer; font-size: 14px; font-weight: 600; color: #555;
+    }
+
+    .dash-tab-btn.active { background: #3f6f3f; color: white; border-color: #3f6f3f; }
+
+    .dash-panel { display: none; }
+    .dash-panel.active { display: block; }
+
+    .dash-card {
+        background: white; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        padding: 20px; margin-bottom: 14px; display: flex; justify-content: space-between;
+        align-items: center; flex-wrap: wrap; gap: 14px;
+    }
+
+    .dash-card-info h3 { font-size: 16px; margin-bottom: 4px; }
+    .dash-card-info p { font-size: 13px; color: #777; margin-bottom: 2px; }
+
+    .dash-card-actions { display: flex; gap: 8px; }
+
+    .approve-btn, .reject-btn, .revoke-btn {
+        border: none; padding: 9px 16px; border-radius: 6px; font-size: 13px; cursor: pointer;
+    }
+
+    .approve-btn { background: #3f6f3f; color: white; }
+    .approve-btn:hover { background: #315b31; }
+
+    .reject-btn { background: transparent; border: 1px solid #d9736c; color: #a52a2a; }
+    .reject-btn:hover { background: #fdeaea; }
+
+    .revoke-btn { background: transparent; border: 1px solid #cc9a00; color: #946b00; }
+    .revoke-btn:hover { background: #fff3d6; }
+
+    .verified-badge {
+        background: #e4f4e5; color: #28752e; padding: 5px 12px; border-radius: 20px;
+        font-size: 12px; font-weight: 600;
+    }
+
+    .empty-msg { text-align: center; color: #888; padding: 30px; background: white; border-radius: 10px; }
+
+</style>
+{% endblock %}
+
+{% block content %}
+
+<section class="dash-section">
+    <div class="dash-container">
+
+        <div class="dash-title">
+            <h1>Admin Dashboard</h1>
+            <p>Review and manage farm verifications and delivery partner approvals</p>
+        </div>
+<div style="text-align:center; margin-bottom:25px; display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+
+    <a href="{% url 'manage_products' %}"
+       style="display:inline-block; background:#3f6f3f; color:white; padding:11px 22px; border-radius:7px; text-decoration:none; font-weight:600;">
+        Manage Product Catalog
+    </a>
+
+    <a href="{% url 'order_overview' %}"
+       style="display:inline-block; background:#2e7d32; color:white; padding:11px 22px; border-radius:7px; text-decoration:none; font-weight:600;">
+        Order Overview
+    </a>
+
+</div>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+
+        <div class="dash-tabs">
+            <button class="dash-tab-btn active" data-target="pending-farms">
+                Pending Farms ({{ pending_farms|length }})
+            </button>
+            <button class="dash-tab-btn" data-target="approved-farms">
+                Approved Farms ({{ approved_farms|length }})
+            </button>
+            <button class="dash-tab-btn" data-target="pending-delivery">
+                Pending Delivery Partners ({{ pending_delivery_partners|length }})
+            </button>
+            <button class="dash-tab-btn" data-target="approved-delivery">
+                Approved Delivery Partners ({{ approved_delivery_partners|length }})
+            </button>
+        </div>
+
+
+        <!-- ================= PENDING FARMS ================= -->
+
+        <div class="dash-panel active" id="pending-farms">
+
+            {% if pending_farms %}
+
+                {% for farm in pending_farms %}
+
+                    <div class="dash-card">
+
+                        <div class="dash-card-info">
+                            <h3>{{ farm.farm_name }}</h3>
+                            <p>Owner: {{ farm.user_profile.user.first_name }} {{ farm.user_profile.user.last_name }} ({{ farm.user_profile.user.email }})</p>
+                            <p>Address: {{ farm.farm_address }}</p>
+                            <p>Type: {{ farm.farm_type }}</p>
+                            {% if farm.certificate %}
+                                <p><a href="{{ farm.certificate.url }}" target="_blank">View Certificate</a></p>
+                            {% endif %}
+                        </div>
+
+                        <div class="dash-card-actions">
+
+                            <form method="POST" action="{% url 'approve_farm' farm.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="approve-btn">Approve</button>
+                            </form>
+
+                            <form method="POST" action="{% url 'reject_farm' farm.id %}"
+                                  onsubmit="return confirm('Reject and remove this farm registration request?');">
+                                {% csrf_token %}
+                                <button type="submit" class="reject-btn">Reject</button>
+                            </form>
+
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+            {% else %}
+                <div class="empty-msg">No pending farm registrations.</div>
+            {% endif %}
+
+        </div>
+
+
+        <!-- ================= APPROVED FARMS ================= -->
+
+        <div class="dash-panel" id="approved-farms">
+
+            {% if approved_farms %}
+
+                {% for farm in approved_farms %}
+
+                    <div class="dash-card">
+
+                        <div class="dash-card-info">
+                            <h3>{{ farm.farm_name }}</h3>
+                            <p>Owner: {{ farm.user_profile.user.first_name }} {{ farm.user_profile.user.last_name }} ({{ farm.user_profile.user.email }})</p>
+                            <p>Address: {{ farm.farm_address }}</p>
+                        </div>
+
+                        <div class="dash-card-actions">
+
+                            <span class="verified-badge">✓ Verified</span>
+
+                            <form method="POST" action="{% url 'revoke_farm' farm.id %}"
+                                  onsubmit="return confirm('Revoke verification for this farm? It will move back to pending.');">
+                                {% csrf_token %}
+                                <button type="submit" class="revoke-btn">Revoke</button>
+                            </form>
+
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+            {% else %}
+                <div class="empty-msg">No approved farms yet.</div>
+            {% endif %}
+
+        </div>
+
+
+        <!-- ================= PENDING DELIVERY PARTNERS ================= -->
+
+        <div class="dash-panel" id="pending-delivery">
+
+            {% if pending_delivery_partners %}
+
+                {% for partner in pending_delivery_partners %}
+
+                    <div class="dash-card">
+
+                        <div class="dash-card-info">
+                            <h3>{{ partner.user.first_name }} {{ partner.user.last_name }}</h3>
+                            <p>Email: {{ partner.user.email }}</p>
+                            <p>Phone: {{ partner.phone_number }}</p>
+                            {% if partner.vehicle_number %}
+                                <p>Vehicle: {{ partner.vehicle_number }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div class="dash-card-actions">
+
+                            <form method="POST" action="{% url 'approve_delivery_partner' partner.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="approve-btn">Approve</button>
+                            </form>
+
+                            <form method="POST" action="{% url 'reject_delivery_partner' partner.id %}"
+                                  onsubmit="return confirm('Reject and permanently remove this delivery partner application?');">
+                                {% csrf_token %}
+                                <button type="submit" class="reject-btn">Reject</button>
+                            </form>
+
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+            {% else %}
+                <div class="empty-msg">No pending delivery partner applications.</div>
+            {% endif %}
+
+        </div>
+
+
+        <!-- ================= APPROVED DELIVERY PARTNERS ================= -->
+
+        <div class="dash-panel" id="approved-delivery">
+
+            {% if approved_delivery_partners %}
+
+                {% for partner in approved_delivery_partners %}
+
+                    <div class="dash-card">
+
+                        <div class="dash-card-info">
+                            <h3>{{ partner.user.first_name }} {{ partner.user.last_name }}</h3>
+                            <p>Email: {{ partner.user.email }}</p>
+                            <p>Phone: {{ partner.phone_number }}</p>
+                        </div>
+
+                        <div class="dash-card-actions">
+
+                            <span class="verified-badge">✓ Approved</span>
+
+                            <form method="POST" action="{% url 'revoke_delivery_partner' partner.id %}"
+                                  onsubmit="return confirm('Revoke approval for this delivery partner? They will move back to pending.');">
+                                {% csrf_token %}
+                                <button type="submit" class="revoke-btn">Revoke</button>
+                            </form>
+
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+            {% else %}
+                <div class="empty-msg">No approved delivery partners yet.</div>
+            {% endif %}
+
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const tabButtons = document.querySelectorAll(".dash-tab-btn");
+        const panels = document.querySelectorAll(".dash-panel");
+
+        tabButtons.forEach(function (btn) {
+
+            btn.addEventListener("click", function () {
+
+                tabButtons.forEach(b => b.classList.remove("active"));
+                panels.forEach(p => p.classList.remove("active"));
+
+                btn.classList.add("active");
+                document.getElementById(btn.dataset.target).classList.add("active");
+
+            });
+
+        });
+
+    });
+
+</script>
+{% endblock %}

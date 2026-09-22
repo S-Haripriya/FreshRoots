@@ -40,6 +40,52 @@ def buy_now(request, listing_id):
         messages.error(request, "Please enter a delivery address.")
         return redirect('browse_products')
 
+    delivery_address = delivery_address.strip()
+    total_amount = quantity * listing.price
+
+    checkout_id = uuid.uuid4().hex
+
+    # Nothing is created yet — just remember this checkout attempt
+    request.session['pending_buy_now'] = {
+        "checkout_id": checkout_id,
+        "listing_id": listing.id,
+        "quantity": quantity,
+        "delivery_address": delivery_address,
+    }
+
+    context = {
+        "listing": listing,
+        "quantity": quantity,
+        "delivery_address": delivery_address,
+        "total_amount": total_amount,
+        "checkout_id": checkout_id,
+    }
+
+    return render(request, 'payment_checkout.html', context)
+@login_required
+def confirm_payment(request, checkout_id):
+    if request.method != "POST":
+        return redirect('browse_products')
+
+    pending = request.session.get('pending_buy_now')
+
+    if not pending or pending.get('checkout_id') != checkout_id:
+        messages.error(request, "This checkout session has expired. Please try again.")
+        return redirect('browse_products')
+
+    listing = get_object_or_404(FarmerProduct, id=pending['listing_id'], is_active=True)
+    quantity = pending['quantity']
+    delivery_address = pending['delivery_address']
+
+    # Re-validate stock, since time has passed
+    if quantity > listing.remaining:
+        messages.error(
+            request,
+            f"Only {listing.remaining} kg of {listing.product.name} available. Please try again."
+        )
+        del request.session['pending_buy_now']
+        return redirect('browse_products')
+
     total_amount = quantity * listing.price
 
     order = Order.objects.create(
@@ -48,25 +94,7 @@ def buy_now(request, listing_id):
         quantity=quantity,
         price_per_unit=listing.price,
         total_amount=total_amount,
-        delivery_address=delivery_address.strip(),
-    )
-
-    return render(request, 'payment_checkout.html', {"order": order})
-
-
-@login_required
-def confirm_payment(request, order_id):
-    """
-    Simulated payment confirmation — no real gateway involved.
-    Marks payment as paid only. Delivery status starts at
-    'placed' and progresses separately through the farmer and
-    delivery partner fulfillment flow.
-    """
-    if request.method != "POST":
-        return redirect('browse_products')
-
-    order = get_object_or_404(
-        Order, id=order_id, customer=request.user, status=Order.STATUS_PENDING
+        delivery_address=delivery_address,
     )
 
     order.status = Order.STATUS_PAID
@@ -79,12 +107,13 @@ def confirm_payment(request, order_id):
         price_at_sale=order.price_per_unit,
     )
 
+    del request.session['pending_buy_now']
+
     messages.success(
         request,
         "Payment successful! Your order has been placed and is being processed."
     )
     return redirect('order_success', order_id=order.id)
-
 
 @login_required
 def order_success(request, order_id):
