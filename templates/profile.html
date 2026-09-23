@@ -82,6 +82,7 @@
         display: flex;
         gap: 15px;
         margin-bottom: 25px;
+        flex-wrap: wrap;
     }
 
     .action-btn {
@@ -109,6 +110,15 @@
 
     .sell-btn:hover {
         background: #315b31;
+    }
+
+    .edit-btn {
+        background: #e8ece5;
+        color: #333;
+    }
+
+    .edit-btn:hover {
+        background: #dce1d8;
     }
 
 
@@ -373,14 +383,23 @@
 
         <div class="action-section">
 
-            
-               <a href = "{% url 'purchase_history' %}"
-                class="action-btn purchase-btn"
-                style="text-decoration: none; display: inline-block; text-align: center;">
+            <a href="{% url 'purchase_history' %}"
+               class="action-btn purchase-btn"
+               style="text-decoration: none; display: inline-block; text-align: center;">
 
                 Purchase History
 
-        </a>
+            </a>
+
+
+            <button
+                type="button"
+                class="action-btn edit-btn"
+                id="editProfileBtn">
+
+                Edit Profile
+
+            </button>
 
 
             <button
@@ -391,6 +410,73 @@
                 Sell Your Products
 
             </button>
+
+        </div>
+
+
+        <!-- ================= EDIT PROFILE FORM ================= -->
+
+        <div
+            class="farm-form-container"
+            id="editProfileForm">
+
+            <h2>Edit Your Details</h2>
+
+            <p class="farm-form-description">
+                Update your personal information below.
+            </p>
+
+            <form method="POST" action="{% url 'edit_profile' %}">
+
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="first_name">First Name</label>
+                    <input
+                        type="text"
+                        id="first_name"
+                        name="first_name"
+                        value="{{ user.first_name }}"
+                        required>
+                </div>
+
+                <div class="form-group">
+                    <label for="last_name">Last Name</label>
+                    <input
+                        type="text"
+                        id="last_name"
+                        name="last_name"
+                        value="{{ user.last_name }}">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        value="{{ user.email }}"
+                        required>
+                    <p class="certificate-note">
+                        Changing your email will also update your login username.
+                    </p>
+                </div>
+
+                <div class="form-group">
+                    <label for="contact_number">Contact Number</label>
+                    <input
+                        type="text"
+                        id="contact_number"
+                        name="contact_number"
+                        value="{{ user_profile.contact_number }}"
+                        required>
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    Save Changes
+                </button>
+
+            </form>
 
         </div>
 
@@ -652,9 +738,14 @@
         const sellButton =
             document.getElementById("sellProductsBtn");
 
-        
         const farmForm =
             document.getElementById("farmForm");
+
+        const editProfileBtn =
+            document.getElementById("editProfileBtn");
+
+        const editProfileForm =
+            document.getElementById("editProfileForm");
 
 
         /* ================= FARM TYPE ELEMENTS ================= */
@@ -681,6 +772,24 @@
             if (farmForm.classList.contains("show")) {
 
                 farmForm.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
+
+            }
+
+        });
+
+
+        /* ================= EDIT PROFILE ================= */
+
+        editProfileBtn.addEventListener("click", function () {
+
+            editProfileForm.classList.toggle("show");
+
+            if (editProfileForm.classList.contains("show")) {
+
+                editProfileForm.scrollIntoView({
                     behavior: "smooth",
                     block: "start"
                 });
@@ -751,11 +860,6 @@
             farmType.value = this.value.trim();
 
         });
-
-
-        /* ================= PURCHASE HISTORY ================= */
-
-        
 
     });
 

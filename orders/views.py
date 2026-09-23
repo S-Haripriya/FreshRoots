@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 
 from userprofile.models import GetCertified
-from products.models import FarmerProduct
+from products.models import FarmerProduct, Review
 from .models import Order, SaleRecord, DeliveryPartner, Cart, CartItem
 
 import uuid
@@ -642,4 +642,38 @@ def cancel_paid_order(request, order_id):
     order.save(update_fields=['status', 'delivery_status'])
 
     messages.success(request, f"Order #{order.id} has been cancelled.")
+    return redirect('purchase_history')
+
+@login_required
+def submit_review(request, order_id):
+    if request.method != "POST":
+        return redirect('purchase_history')
+
+    order = get_object_or_404(
+        Order,
+        id=order_id,
+        customer=request.user,
+        delivery_status=Order.DELIVERY_DELIVERED
+    )
+
+    if hasattr(order, 'review'):
+        messages.error(request, "You've already reviewed this order.")
+        return redirect('purchase_history')
+
+    rating = request.POST.get('rating')
+    comment = request.POST.get('comment', '').strip()
+
+    if not rating or not rating.isdigit() or not (1 <= int(rating) <= 5):
+        messages.error(request, "Please select a rating between 1 and 5 stars.")
+        return redirect('purchase_history')
+
+    Review.objects.create(
+        farmer_product=order.farmer_product,
+        customer=request.user,
+        order=order,
+        rating=int(rating),
+        comment=comment,
+    )
+
+    messages.success(request, "Thank you for your review!")
     return redirect('purchase_history')

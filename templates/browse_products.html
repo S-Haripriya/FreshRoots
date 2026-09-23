@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block title %}
     FreshRoots | Browse Products
 {% endblock %}
@@ -113,7 +113,31 @@
     .browse-farm-name {
         font-size: 13px;
         color: #888;
+        margin-bottom: 6px;
+    }
+
+    .browse-rating-row {
+        font-size: 13px;
         margin-bottom: 10px;
+    }
+
+    .browse-rating-row.has-rating {
+        color: #f5a623;
+    }
+
+    .browse-rating-row.no-rating {
+        color: #aaa;
+        font-size: 12px;
+    }
+
+    .see-reviews-link {
+        color: #f5a623;
+        text-decoration: underline;
+        font-size: 13px;
+    }
+
+    .see-reviews-link:hover {
+        color: #d18c0f;
     }
 
     .browse-stat-row {
@@ -275,25 +299,26 @@
         background: #ddd;
     }
 
-.add-to-cart-form {
-    margin-top: 8px;
-}
+    .add-to-cart-form {
+        margin-top: 8px;
+    }
 
-.add-cart-btn {
-    width: 100%;
-    background: #e8f5e9;
-    color: #244b27;
-    border: 1px solid #a5c6a6;
-    padding: 9px 8px;
-    border-radius: 6px;
-    font-size: 13px;
-    cursor: pointer;
-    transition: 0.3s;
-}
+    .add-cart-btn {
+        width: 100%;
+        background: #e8f5e9;
+        color: #244b27;
+        border: 1px solid #a5c6a6;
+        padding: 9px 8px;
+        border-radius: 6px;
+        font-size: 13px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
 
-.add-cart-btn:hover {
-    background: #d4ecd6;
-}
+    .add-cart-btn:hover {
+        background: #d4ecd6;
+    }
+
     /* ================= FARM DETAILS MODAL TEXT ================= */
 
     .farm-detail-row {
@@ -306,6 +331,53 @@
         color: #888;
         font-size: 12px;
         margin-bottom: 3px;
+    }
+
+
+    /* ================= REVIEWS MODAL ================= */
+
+    .review-modal-item {
+        padding: 14px 0;
+        border-bottom: 1px solid #eee;
+    }
+
+    .review-modal-item:last-child {
+        border-bottom: none;
+    }
+
+    .review-modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 6px;
+    }
+
+    .review-modal-name {
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .review-modal-date {
+        font-size: 12px;
+        color: #999;
+    }
+
+    .review-modal-stars {
+        color: #f5a623;
+        font-size: 14px;
+        margin-bottom: 6px;
+    }
+
+    .review-modal-comment {
+        font-size: 13px;
+        color: #555;
+    }
+
+    .review-modal-empty,
+    .review-modal-loading {
+        text-align: center;
+        color: #888;
+        padding: 20px;
     }
 
 
@@ -383,6 +455,8 @@
 
                             {% if listing.image %}
                                 <img src="{{ listing.image.url }}" alt="{{ listing.product.name }}">
+                            {% else %}
+                                <img src="{% static 'images/default-product.png' %}" alt="No image">
                             {% endif %}
 
                         </div>
@@ -395,6 +469,24 @@
                             <p class="browse-farm-name">
                                 {{ listing.farm.farm_name }}
                             </p>
+
+                            {% if listing.average_rating %}
+
+                                <p class="browse-rating-row has-rating">
+                                    ★ {{ listing.average_rating }}
+                                    <a href="#" class="see-reviews-link"
+                                       onclick="openReviewsModal({{ listing.id }}); return false;">
+                                        ({{ listing.review_count }} review{{ listing.review_count|pluralize }})
+                                    </a>
+                                </p>
+
+                            {% else %}
+
+                                <p class="browse-rating-row no-rating">
+                                    No reviews yet
+                                </p>
+
+                            {% endif %}
 
 
                             <div class="browse-stat-row">
@@ -437,6 +529,7 @@
                                 </button>
 
                             </div>
+
                             <form method="POST" action="{% url 'add_to_cart' listing.id %}" class="add-to-cart-form">
                                 {% csrf_token %}
                                 <input type="hidden" name="quantity" value="1">
@@ -590,6 +683,37 @@
 </div>
 
 
+<!-- ================= REVIEWS MODAL ================= -->
+
+<div class="modal-overlay" id="reviewsModalOverlay">
+
+    <div class="modal-box">
+
+        <h2 id="reviewsModalTitle">Reviews</h2>
+
+        <div id="reviewsModalContent">
+            <div class="review-modal-loading">Loading reviews...</div>
+        </div>
+
+        <div class="modal-actions">
+
+            <button
+                type="button"
+                class="modal-cancel-btn"
+                style="flex:1"
+                onclick="closeReviewsModal()">
+
+                Close
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
 <!-- ================= JAVASCRIPT ================= -->
 
 <script>
@@ -673,6 +797,69 @@
 
     function closeFarmModal() {
         document.getElementById('farmModalOverlay').classList.remove('show');
+    }
+
+
+    /* ================= REVIEWS MODAL ================= */
+
+    function openReviewsModal(listingId) {
+
+        const overlay = document.getElementById('reviewsModalOverlay');
+        const content = document.getElementById('reviewsModalContent');
+
+        content.innerHTML = '<div class="review-modal-loading">Loading reviews...</div>';
+        overlay.classList.add('show');
+
+        fetch('/listing-reviews/' + listingId + '/')
+            .then(response => response.json())
+            .then(data => {
+
+                document.getElementById('reviewsModalTitle').textContent =
+                    data.product_name + ' — ' + data.average_rating + '★ (' + data.review_count + ' reviews)';
+
+                if (data.reviews.length === 0) {
+                    content.innerHTML = '<div class="review-modal-empty">No reviews yet.</div>';
+                    return;
+                }
+
+                let html = '';
+
+                data.reviews.forEach(function (review) {
+
+                    const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
+
+                    html += '<div class="review-modal-item">';
+                    html += '  <div class="review-modal-header">';
+                    html += '    <span class="review-modal-name">' + escapeHtml(review.customer_name) + '</span>';
+                    html += '    <span class="review-modal-date">' + review.date + '</span>';
+                    html += '  </div>';
+                    html += '  <div class="review-modal-stars">' + stars + '</div>';
+
+                    if (review.comment) {
+                        html += '  <p class="review-modal-comment">' + escapeHtml(review.comment) + '</p>';
+                    }
+
+                    html += '</div>';
+
+                });
+
+                content.innerHTML = html;
+
+            })
+            .catch(() => {
+                content.innerHTML = '<div class="review-modal-empty">Could not load reviews. Please try again.</div>';
+            });
+
+    }
+
+    function closeReviewsModal() {
+        document.getElementById('reviewsModalOverlay').classList.remove('show');
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
     }
 
 

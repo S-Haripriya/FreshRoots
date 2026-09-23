@@ -1,5 +1,6 @@
-{% extends 'base.html' %}
 
+{% extends 'base.html' %}
+{% load static %}
 {% block title %}
     FreshRoots | Purchase History
 {% endblock %}
@@ -60,6 +61,30 @@
     .history-summary strong {
         font-size: 22px;
         color: #244b27;
+    }
+
+
+    /* ================= MESSAGES ================= */
+
+    .message {
+        padding: 14px 18px;
+        border-radius: 7px;
+        margin-bottom: 20px;
+    }
+
+    .message.success {
+        background: #e7f5e8;
+        color: #28632d;
+    }
+
+    .message.error {
+        background: #fdeaea;
+        color: #a52a2a;
+    }
+
+    .message.info {
+        background: #e3edfb;
+        color: #2c5aa0;
     }
 
 
@@ -169,106 +194,211 @@
         font-weight: 600;
     }
 
-.order-tracking {
-    margin-top: 16px;
-    padding-top: 16px;
-    border-top: 1px solid #eee;
-}
 
-.tracking-label {
-    font-size: 12px;
-    color: #999;
-    display: block;
-    margin-bottom: 6px;
-}
+    /* ================= CANCEL ORDER ================= */
 
-.tracking-current-status {
-    display: inline-block;
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-size: 13px;
-    font-weight: 600;
-    margin-bottom: 10px;
-}
+    .cancel-order-row {
+        margin-top: 14px;
+    }
 
-.status-placed,
-.status-confirmed {
-    background: #fff3d6;
-    color: #946b00;
-}
+    .cancel-order-btn {
+        background: transparent;
+        border: 1px solid #d9736c;
+        color: #a52a2a;
+        padding: 9px 18px;
+        border-radius: 6px;
+        font-size: 13px;
+        cursor: pointer;
+    }
 
-.status-packed,
-.status-shipped,
-.status-out_for_delivery {
-    background: #e3edfb;
-    color: #2c5aa0;
-}
+    .cancel-order-btn:hover {
+        background: #fdeaea;
+    }
 
-.status-delivered {
-    background: #e4f4e5;
-    color: #28752e;
-}
 
-.status-cancelled,
-.status-returned {
-    background: #fdeaea;
-    color: #a52a2a;
-}
+    /* ================= TRACKING ================= */
 
-.delivery-partner-info,
-.delivery-eta {
-    font-size: 13px;
-    color: #666;
-    margin-bottom: 6px;
-}
+    .order-tracking {
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 1px solid #eee;
+    }
 
-.tracking-timeline {
-    margin-top: 14px;
-    padding-left: 6px;
-}
+    .tracking-label {
+        font-size: 12px;
+        color: #999;
+        display: block;
+        margin-bottom: 6px;
+    }
 
-.timeline-step {
-    display: flex;
-    gap: 12px;
-    padding-bottom: 16px;
-    position: relative;
-}
+    .tracking-current-status {
+        display: inline-block;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
 
-.timeline-step:not(:last-child)::before {
-    content: '';
-    position: absolute;
-    left: 4px;
-    top: 14px;
-    bottom: 0;
-    width: 2px;
-    background: #ddd;
-}
+    .status-placed,
+    .status-confirmed {
+        background: #fff3d6;
+        color: #946b00;
+    }
 
-.timeline-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: #3f6f3f;
-    margin-top: 4px;
-    flex-shrink: 0;
-}
+    .status-packed,
+    .status-shipped,
+    .status-out_for_delivery {
+        background: #e3edfb;
+        color: #2c5aa0;
+    }
 
-.timeline-content strong {
-    display: block;
-    font-size: 14px;
-    color: #244b27;
-}
+    .status-delivered {
+        background: #e4f4e5;
+        color: #28752e;
+    }
 
-.timeline-content span {
-    font-size: 12px;
-    color: #999;
-}
+    .status-cancelled,
+    .status-returned {
+        background: #fdeaea;
+        color: #a52a2a;
+    }
 
-.timeline-content p {
-    font-size: 13px;
-    color: #666;
-    margin-top: 4px;
-}
+    .delivery-partner-info,
+    .delivery-eta {
+        font-size: 13px;
+        color: #666;
+        margin-bottom: 6px;
+    }
+
+    .tracking-timeline {
+        margin-top: 14px;
+        padding-left: 6px;
+    }
+
+    .timeline-step {
+        display: flex;
+        gap: 12px;
+        padding-bottom: 16px;
+        position: relative;
+    }
+
+    .timeline-step:not(:last-child)::before {
+        content: '';
+        position: absolute;
+        left: 4px;
+        top: 14px;
+        bottom: 0;
+        width: 2px;
+        background: #ddd;
+    }
+
+    .timeline-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #3f6f3f;
+        margin-top: 4px;
+        flex-shrink: 0;
+    }
+
+    .timeline-content strong {
+        display: block;
+        font-size: 14px;
+        color: #244b27;
+    }
+
+    .timeline-content span {
+        font-size: 12px;
+        color: #999;
+    }
+
+    .timeline-content p {
+        font-size: 13px;
+        color: #666;
+        margin-top: 4px;
+    }
+
+
+    /* ================= REVIEWS ================= */
+
+    .review-section {
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 1px solid #eee;
+    }
+
+    .review-section-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 10px;
+        display: block;
+    }
+
+    .existing-review-stars {
+        color: #f5a623;
+        font-size: 16px;
+    }
+
+    .existing-review-comment {
+        font-size: 13px;
+        color: #666;
+        margin-top: 6px;
+    }
+
+    .star-picker {
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: flex-end;
+        gap: 3px;
+        margin-bottom: 10px;
+    }
+
+    .star-picker label {
+        cursor: pointer;
+        font-size: 22px;
+        color: #ccc;
+        transition: color 0.15s ease;
+    }
+
+    .star-picker input {
+        display: none;
+    }
+
+    .star-picker label:hover,
+    .star-picker label:hover ~ label,
+    .star-picker input:checked ~ label {
+        color: #f5a623;
+    }
+
+    .review-comment-input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 13px;
+        min-height: 60px;
+        box-sizing: border-box;
+        margin-bottom: 10px;
+        resize: vertical;
+    }
+
+    .review-submit-btn {
+        background: #3f6f3f;
+        color: white;
+        border: none;
+        padding: 9px 20px;
+        border-radius: 6px;
+        font-size: 13px;
+        cursor: pointer;
+    }
+
+    .review-submit-btn:hover {
+        background: #315b31;
+    }
+
+
     /* ================= RESPONSIVE ================= */
 
     @media (max-width: 600px) {
@@ -303,6 +433,21 @@
             </p>
 
         </div>
+
+
+        <!-- ================= MESSAGES ================= -->
+
+        {% if messages %}
+
+            {% for message in messages %}
+
+                <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+                    {{ message }}
+                </div>
+
+            {% endfor %}
+
+        {% endif %}
 
 
         <!-- ================= SUMMARY ================= -->
@@ -342,22 +487,6 @@
                         <span class="order-status status-{{ order.status }}">
                             {{ order.status }}
                         </span>
-                        {% if order.status == 'paid' and order.delivery_status in cancellable_statuses %}
-
-    <form method="POST" action="{% url 'cancel_paid_order' order.id %}"
-          onsubmit="return confirm('Cancel this order? This cannot be undone.');"
-          style="margin-top: 14px;">
-
-        {% csrf_token %}
-
-        <button type="submit"
-                style="background: transparent; border: 1px solid #d9736c; color: #a52a2a; padding: 9px 18px; border-radius: 6px; font-size: 13px; cursor: pointer;">
-            Cancel Order
-        </button>
-
-    </form>
-
-{% endif %}
 
                     </div>
 
@@ -391,6 +520,32 @@
                         <span>Delivered To</span>
                         {{ order.delivery_address }}
                     </div>
+
+
+                    <!-- ================= CANCEL ORDER ================= -->
+
+                    {% if order.status == 'paid' and order.delivery_status in cancellable_statuses %}
+
+                        <div class="cancel-order-row">
+
+                            <form method="POST" action="{% url 'cancel_paid_order' order.id %}"
+                                  onsubmit="return confirm('Cancel this order? This cannot be undone.');">
+
+                                {% csrf_token %}
+
+                                <button type="submit" class="cancel-order-btn">
+                                    Cancel Order
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    {% endif %}
+
+
+                    <!-- ================= DELIVERY TRACKING ================= -->
+
                     <div class="order-tracking">
 
                         <span class="tracking-label">Delivery Status</span>
@@ -402,11 +557,11 @@
                         {% if order.delivery_partner %}
 
                             <p class="delivery-partner-info">
-                                Delivery Partner: {{ order.delivery_partner.name }}
+                                Delivery Partner: {{ order.delivery_partner.user.first_name }} {{ order.delivery_partner.user.last_name }}
                                 ({{ order.delivery_partner.phone_number }})
                             </p>
 
-                        {% endif %} 
+                        {% endif %}
 
                         {% if order.estimated_delivery_date %}
 
@@ -425,21 +580,86 @@
 
                                     <div class="timeline-dot"></div>
 
-                                <div class="timeline-content">
-                                    <strong>{{ update.get_status_display }}</strong>
-                                    <span>{{ update.updated_at|date:"d M Y, h:i A" }}</span>
-                                    {% if update.note %}
-                                        <p>{{ update.note }}</p>
-                                    {% endif %}
+                                    <div class="timeline-content">
+                                        <strong>{{ update.get_status_display }}</strong>
+                                        <span>{{ update.updated_at|date:"d M Y, h:i A" }}</span>
+                                        {% if update.note %}
+                                            <p>{{ update.note }}</p>
+                                        {% endif %}
+                                    </div>
+
                                 </div>
 
-                            </div>
+                            {% endfor %}
 
-                        {% endfor %}
-
-                    </div>
+                        </div>
 
                     </div>
+
+
+                    <!-- ================= REVIEW ================= -->
+
+                    {% if order.delivery_status == 'delivered' %}
+
+                        <div class="review-section">
+
+                            {% if order.review %}
+
+                                <span class="review-section-label">Your Rating</span>
+
+                                <div class="existing-review-stars">
+                                    {% for i in "12345" %}
+                                        {% if forloop.counter <= order.review.rating %}★{% else %}☆{% endif %}
+                                    {% endfor %}
+                                </div>
+
+                                {% if order.review.comment %}
+                                    <p class="existing-review-comment">
+                                        {{ order.review.comment }}
+                                    </p>
+                                {% endif %}
+
+                            {% else %}
+
+                                <span class="review-section-label">Rate this product</span>
+
+                                <form method="POST" action="{% url 'submit_review' order.id %}">
+
+                                    {% csrf_token %}
+
+                                    <div class="star-picker">
+
+                                        <input type="radio" name="rating" value="5" id="star5-{{ order.id }}">
+                                        <label for="star5-{{ order.id }}">★</label>
+
+                                        <input type="radio" name="rating" value="4" id="star4-{{ order.id }}">
+                                        <label for="star4-{{ order.id }}">★</label>
+
+                                        <input type="radio" name="rating" value="3" id="star3-{{ order.id }}">
+                                        <label for="star3-{{ order.id }}">★</label>
+
+                                        <input type="radio" name="rating" value="2" id="star2-{{ order.id }}">
+                                        <label for="star2-{{ order.id }}">★</label>
+
+                                        <input type="radio" name="rating" value="1" id="star1-{{ order.id }}">
+                                        <label for="star1-{{ order.id }}">★</label>
+
+                                    </div>
+
+                                    <textarea name="comment" class="review-comment-input"
+                                              placeholder="Optional comment..."></textarea>
+
+                                    <button type="submit" class="review-submit-btn">
+                                        Submit Review
+                                    </button>
+
+                                </form>
+
+                            {% endif %}
+
+                        </div>
+
+                    {% endif %}
 
                 </div>
 

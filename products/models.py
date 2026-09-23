@@ -3,7 +3,7 @@ from django.db import models
 from django.conf import settings
 from django.db.models import Sum
 from userprofile.models import GetCertified   # the verified farm
-
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 # =========================================================
 # ADMIN-MANAGED CATALOG
@@ -98,5 +98,30 @@ class FarmerProduct(models.Model):
     @property
     def is_sold_out(self):
         return self.remaining <= 0
+    @property
+    def average_rating(self):
+        agg = self.reviews.aggregate(avg=models.Avg('rating'))['avg']
+        return round(agg, 1) if agg else None
 
+    @property
+    def review_count(self):
+        return self.reviews.count()
 
+class Review(models.Model):
+    farmer_product = models.ForeignKey(
+        FarmerProduct, on_delete=models.CASCADE, related_name='reviews'
+    )
+    customer = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='reviews'
+    )
+    order = models.OneToOneField(
+        'orders.Order', on_delete=models.CASCADE, related_name='review'
+    )
+    rating = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(5)]
+    )
+    comment = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.rating}★ — {self.farmer_product.product.name} by {self.customer.username}"

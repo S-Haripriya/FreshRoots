@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
+from django.http import JsonResponse
 
 from django.db.models import Q, F
 from userprofile.models import GetCertified
@@ -131,3 +132,24 @@ def browse_products(request):
     return render(request, 'browse_products.html', context)
 
 
+def get_listing_reviews(request, listing_id):
+    listing = get_object_or_404(FarmerProduct, id=listing_id)
+
+    reviews = listing.reviews.select_related('customer').order_by('-created_at')
+
+    data = [
+        {
+            "customer_name": review.customer.first_name or review.customer.username,
+            "rating": review.rating,
+            "comment": review.comment,
+            "date": review.created_at.strftime("%d %b %Y"),
+        }
+        for review in reviews
+    ]
+
+    return JsonResponse({
+        "product_name": listing.product.name,
+        "average_rating": listing.average_rating,
+        "review_count": listing.review_count,
+        "reviews": data,
+    })
