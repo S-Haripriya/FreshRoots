@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}FreshRoots | Page Not Found{% endblock %}
+
+{% block content %}
+
+<section style="padding: 100px 20px; text-align: center; min-height: 60vh;">
+
+    <h1 style="font-size: 80px; color: #3f6f3f; margin-bottom: 10px;">404</h1>
+
+    <h2 style="color: #244b27; margin-bottom: 15px;">Page Not Found</h2>
+
+    <p style="color: #666; margin-bottom: 30px;">
+        Sorry, the page you're looking for doesn't exist or may have been moved.
+    </p>
+
+    <a href="{% url 'home' %}"
+       style="display: inline-block; background: #3f6f3f; color: white; padding: 12px 25px; border-radius: 6px; text-decoration: none;">
+        Back to Home
+    </a>
+
+</section>
+
+{% endblock %}

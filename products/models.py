@@ -59,6 +59,7 @@ class FarmerProduct(models.Model):
     sold_quantity / money_earned are cached counters, kept in sync
     via a signal whenever a SaleRecord is created (see signals.py).
     """
+    low_stock_notified = models.BooleanField(default=False)
     farm = models.ForeignKey(
         GetCertified,
         on_delete=models.CASCADE,

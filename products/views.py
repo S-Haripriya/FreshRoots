@@ -4,10 +4,12 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 
 from django.db.models import Q, F
+from django.core.paginator import Paginator
+
 from userprofile.models import GetCertified
 from .models import Product, FarmerProduct
 from orders.models import SaleRecord
-from django.core.paginator import Paginator
+
 
 @login_required
 def my_products(request):
@@ -44,15 +46,17 @@ def my_products(request):
             if not listing.is_active:
                 listing.is_active = True
                 listing.quantity = quantity
+                listing.low_stock_notified = False
                 if image:
                     listing.image = image
-                listing.save(update_fields=["is_active", "quantity", "image"])
+                listing.save(update_fields=["is_active", "quantity", "image", "low_stock_notified"])
                 messages.success(request, f"{product.name} has been re-listed.")
             else:
                 listing.quantity += quantity
+                listing.low_stock_notified = False
                 if image:
                     listing.image = image
-                listing.save(update_fields=["quantity", "image"])
+                listing.save(update_fields=["quantity", "image", "low_stock_notified"])
                 messages.success(request, f"Added {quantity} more units of {product.name}.")
         else:
             messages.success(request, f"{product.name} has been added to your products.")
@@ -109,6 +113,7 @@ def remove_farmer_product(request, listing_id):
 
     return redirect('my_products')
 
+
 def browse_products(request):
     query = request.GET.get('q', '').strip()
 
@@ -124,6 +129,7 @@ def browse_products(request):
             Q(farm__farm_name__icontains=query) |
             Q(farm__farm_address__icontains=query)
         )
+
     paginator = Paginator(listings, 9)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -132,7 +138,6 @@ def browse_products(request):
         "listings": page_obj,
         "page_obj": page_obj,
         "query": query,
-
     }
 
     return render(request, 'browse_products.html', context)
