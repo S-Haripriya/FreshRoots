@@ -9,7 +9,8 @@ from products.models import FarmerProduct
 from userprofile.models import GetCertified
 from orders.models import DeliveryPartner, Order
 from products.models import Product
-
+from django.core.paginator import Paginator
+from core.email_utils import send_notification_email
 
 def home(request):
     featured_listings = FarmerProduct.objects.filter(
@@ -155,7 +156,18 @@ def approve_farm(request, farm_id):
     farm = get_object_or_404(GetCertified, id=farm_id)
     farm.is_verified = True
     farm.save(update_fields=['is_verified'])
-
+    farmer_user = farm.user_profile.user
+    send_notification_email(
+        subject="Your farm has been approved on FreshRoots!",
+        message=(
+            f"Hi {farmer_user.first_name or farmer_user.username},\n\n"
+            f"Great news — your farm '{farm.farm_name}' has been verified "
+            f"and approved on FreshRoots.\n\n"
+            f"You can now start listing your products for sale.\n\n"
+            f"— The FreshRoots Team"
+        ),
+        recipient_email=farmer_user.email,
+    )
     messages.success(request, f"{farm.farm_name} has been approved.")
     return redirect('admin_dashboard')
 
@@ -195,7 +207,16 @@ def approve_delivery_partner(request, partner_id):
     partner = get_object_or_404(DeliveryPartner, id=partner_id)
     partner.is_approved = True
     partner.save(update_fields=['is_approved'])
-
+    send_notification_email(
+        subject="Your FreshRoots delivery partner account has been approved!",
+        message=(
+            f"Hi {partner.user.first_name or partner.user.username},\n\n"
+            f"Your delivery partner account has been approved. "
+            f"You can now log in and start accepting deliveries.\n\n"
+            f"— The FreshRoots Team"
+        ),
+        recipient_email=partner.user.email,
+    )
     messages.success(request, f"{partner.user.get_full_name() or partner.user.username} has been approved.")
     return redirect('admin_dashboard')
 
@@ -355,15 +376,21 @@ def order_overview(request):
 
     if delivery_filter:
         orders = orders.filter(delivery_status=delivery_filter)
+    total_orders = orders.count()
+    total_revenue = sum(o.total_amount for o in orders if o.status == Order.STATUS_PAID)
 
+    paginator = Paginator(orders, 20)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
     context = {
-        "orders": orders,
+        "orders": page_obj,
+        "page_obj":page_obj,
         "status_filter": status_filter,
         "delivery_filter": delivery_filter,
         "status_choices": Order.STATUS_CHOICES,
         "delivery_status_choices": Order.DELIVERY_STATUS_CHOICES,
-        "total_orders": orders.count(),
-        "total_revenue": sum(o.total_amount for o in orders if o.status == Order.STATUS_PAID),
+        "total_orders": total_orders,
+        "total_revenue": total_revenue,
     }
 
     return render(request, 'order_overview.html', context)

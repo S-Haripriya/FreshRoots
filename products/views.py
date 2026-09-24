@@ -7,6 +7,7 @@ from django.db.models import Q, F
 from userprofile.models import GetCertified
 from .models import Product, FarmerProduct
 from orders.models import SaleRecord
+from django.core.paginator import Paginator
 
 @login_required
 def my_products(request):
@@ -115,7 +116,7 @@ def browse_products(request):
         is_active=True
     ).filter(
         sold_quantity__lt=F('quantity')   # only in-stock listings
-    ).select_related('product', 'farm')
+    ).select_related('product', 'farm').order_by('-created_at')
 
     if query:
         listings = listings.filter(
@@ -123,10 +124,15 @@ def browse_products(request):
             Q(farm__farm_name__icontains=query) |
             Q(farm__farm_address__icontains=query)
         )
+    paginator = Paginator(listings, 9)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
 
     context = {
-        "listings": listings,
+        "listings": page_obj,
+        "page_obj": page_obj,
         "query": query,
+
     }
 
     return render(request, 'browse_products.html', context)

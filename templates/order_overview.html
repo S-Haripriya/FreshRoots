@@ -1,4 +1,3 @@
-
 {% extends 'base.html' %}
 
 {% load static %}
@@ -73,8 +72,40 @@
 
     .empty-msg { text-align: center; color: #888; padding: 35px; background: white; border-radius: 10px; }
 
+
+    /* ================= PAGINATION ================= */
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+        margin-top: 25px;
+        font-size: 14px;
+    }
+
+    .pagination a {
+        background: #3f6f3f;
+        color: white;
+        padding: 9px 18px;
+        border-radius: 6px;
+    }
+
+    .pagination a:hover {
+        background: #315b31;
+    }
+
+    .pagination span {
+        color: #666;
+    }
+
+
     @media (max-width: 900px) {
         .orders-table { display: block; overflow-x: auto; white-space: nowrap; }
+    }
+
+    @media (max-width: 500px) {
+        .pagination { flex-direction: column; gap: 12px; }
     }
 
 </style>
@@ -198,6 +229,27 @@
                 </tbody>
 
             </table>
+
+
+            <!-- ================= PAGINATION ================= -->
+
+            {% if page_obj.has_other_pages %}
+
+                <div class="pagination">
+
+                    {% if page_obj.has_previous %}
+                        <a href="?status={{ status_filter }}&delivery_status={{ delivery_filter }}&page={{ page_obj.previous_page_number }}">← Previous</a>
+                    {% endif %}
+
+                    <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+
+                    {% if page_obj.has_next %}
+                        <a href="?status={{ status_filter }}&delivery_status={{ delivery_filter }}&page={{ page_obj.next_page_number }}">Next →</a>
+                    {% endif %}
+
+                </div>
+
+            {% endif %}
 
         {% else %}
 

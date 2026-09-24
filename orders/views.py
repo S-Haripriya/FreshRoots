@@ -2,13 +2,16 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
-from django.contrib.auth.hashers import make_password
+from django.core.paginator import Paginator
 
+from core.email_utils import send_notification_email
 from userprofile.models import GetCertified
 from products.models import FarmerProduct, Review
 from .models import Order, SaleRecord, DeliveryPartner, Cart, CartItem
 
 import uuid
+
+
 # =========================================================
 # CUSTOMER CHECKOUT
 # =========================================================
@@ -45,7 +48,6 @@ def buy_now(request, listing_id):
 
     checkout_id = uuid.uuid4().hex
 
-    # Nothing is created yet — just remember this checkout attempt
     request.session['pending_buy_now'] = {
         "checkout_id": checkout_id,
         "listing_id": listing.id,
@@ -62,6 +64,8 @@ def buy_now(request, listing_id):
     }
 
     return render(request, 'payment_checkout.html', context)
+
+
 @login_required
 def confirm_payment(request, checkout_id):
     if request.method != "POST":
@@ -77,7 +81,6 @@ def confirm_payment(request, checkout_id):
     quantity = pending['quantity']
     delivery_address = pending['delivery_address']
 
-    # Re-validate stock, since time has passed
     if quantity > listing.remaining:
         messages.error(
             request,
@@ -108,6 +111,23 @@ def confirm_payment(request, checkout_id):
         order=order,
     )
 
+    farmer_user = order.farmer_product.farm.user_profile.user
+
+    send_notification_email(
+        subject=f"New order for {order.farmer_product.product.name}",
+        message=(
+            f"Hi {farmer_user.first_name or farmer_user.username},\n\n"
+            f"You've received a new order on FreshRoots.\n\n"
+            f"Product: {order.farmer_product.product.name}\n"
+            f"Quantity: {order.quantity} kg\n"
+            f"Total: ₹{order.total_amount}\n"
+            f"Delivery Address: {order.delivery_address}\n\n"
+            f"Log in to your account to view and process this order.\n\n"
+            f"— The FreshRoots Team"
+        ),
+        recipient_email=farmer_user.email,
+    )
+
     del request.session['pending_buy_now']
 
     messages.success(
@@ -115,6 +135,7 @@ def confirm_payment(request, checkout_id):
         "Payment successful! Your order has been placed and is being processed."
     )
     return redirect('order_success', order_id=order.id)
+
 
 @login_required
 def order_success(request, order_id):
@@ -149,8 +170,13 @@ def purchase_history(request):
         order.total_amount for order in orders if order.status == Order.STATUS_PAID
     )
 
+    paginator = Paginator(orders, 5)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     context = {
-        "orders": orders,
+        "orders": page_obj,
+        "page_obj": page_obj,
         "total_spent": total_spent,
         "cancellable_statuses": [
             Order.DELIVERY_PLACED,
@@ -197,8 +223,13 @@ def farmer_orders(request):
         'delivery_partner'
     ).order_by('-created_at')
 
+    paginator = Paginator(orders, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     context = {
-        "orders": orders,
+        "orders": page_obj,
+        "page_obj": page_obj,
         "next_status_map": FARMER_NEXT_STATUS_MAP,
     }
 
@@ -234,6 +265,19 @@ def advance_delivery_status(request, order_id):
 
     order.delivery_status = next_status
     order.save(update_fields=['delivery_status'])
+
+    if next_status == Order.DELIVERY_SHIPPED:
+        send_notification_email(
+            subject=f"Your order for {order.farmer_product.product.name} has shipped!",
+            message=(
+                f"Hi {order.customer.first_name or order.customer.username},\n\n"
+                f"Your order for {order.farmer_product.product.name} "
+                f"({order.quantity} kg) has been shipped and is on its way.\n\n"
+                f"You can track its progress in your Purchase History.\n\n"
+                f"— The FreshRoots Team"
+            ),
+            recipient_email=order.customer.email,
+        )
 
     messages.success(
         request,
@@ -358,9 +402,21 @@ def mark_delivered(request, order_id):
 
     order.delivery_status = Order.DELIVERY_DELIVERED
     order.save(update_fields=['delivery_status'])   # delivered_at auto-set by your existing pre_save signal
-
+    send_notification_email(
+        subject=f"Your order for {order.farmer_product.product.name} has been delivered!",
+        message=(
+            f"Hi {order.customer.first_name or order.customer.username},\n\n"
+            f"Your order for {order.farmer_product.product.name} "
+            f"({order.quantity} kg) has been delivered.\n\n"
+            f"We hope you enjoy it! Don't forget to leave a review "
+            f"in your Purchase History.\n\n"
+            f"— The FreshRoots Team"
+        ),
+        recipient_email=order.customer.email,
+    )
     messages.success(request, f"Order #{order.id} marked as delivered.")
     return redirect('delivery_dashboard')
+
 
 # =========================================================
 # SHOPPING CART
@@ -471,6 +527,7 @@ def remove_cart_item(request, item_id):
     messages.success(request, f"{product_name} removed from your cart.")
     return redirect('view_cart')
 
+
 @login_required
 def checkout_cart(request):
     if request.method != "POST":
@@ -491,7 +548,6 @@ def checkout_cart(request):
 
     delivery_address = delivery_address.strip()
 
-    # Re-validate stock before showing the payment screen
     for item in items:
         if item.quantity > item.farmer_product.remaining:
             messages.error(
@@ -503,8 +559,6 @@ def checkout_cart(request):
 
     checkout_id = uuid.uuid4().hex
 
-    # Nothing is created yet — just remember this checkout attempt.
-    # The cart itself is left completely untouched.
     request.session['pending_checkout_id'] = checkout_id
     request.session['pending_delivery_address'] = delivery_address
 
@@ -522,8 +576,6 @@ def confirm_cart_payment(request, checkout_id):
     if request.method != "POST":
         return redirect('view_cart')
 
-    # Make sure this is the same checkout the user actually started —
-    # protects against replaying a stale/abandoned payment page.
     if request.session.get('pending_checkout_id') != checkout_id:
         messages.error(request, "This checkout session has expired. Please try again.")
         return redirect('view_cart')
@@ -537,7 +589,6 @@ def confirm_cart_payment(request, checkout_id):
         messages.error(request, "Your cart is empty.")
         return redirect('view_cart')
 
-    # Re-validate stock one last time, since time has passed
     for item in items:
         if item.quantity > item.farmer_product.remaining:
             messages.error(
@@ -572,7 +623,23 @@ def confirm_cart_payment(request, checkout_id):
 
         created_orders.append(order)
 
-    # Only now, after successful "payment", clear the cart
+        farmer_user = order.farmer_product.farm.user_profile.user
+
+        send_notification_email(
+            subject=f"New order for {order.farmer_product.product.name}",
+            message=(
+                f"Hi {farmer_user.first_name or farmer_user.username},\n\n"
+                f"You've received a new order on FreshRoots.\n\n"
+                f"Product: {order.farmer_product.product.name}\n"
+                f"Quantity: {order.quantity} kg\n"
+                f"Total: ₹{order.total_amount}\n"
+                f"Delivery Address: {order.delivery_address}\n\n"
+                f"Log in to your account to view and process this order.\n\n"
+                f"— The FreshRoots Team"
+            ),
+            recipient_email=farmer_user.email,
+        )
+
     cart.items.all().delete()
 
     del request.session['pending_checkout_id']
@@ -627,13 +694,11 @@ def cancel_paid_order(request, order_id):
         )
         return redirect('purchase_history')
 
-    # Reverse the farmer's stock and earnings
     fp = order.farmer_product
     fp.sold_quantity = max(0, fp.sold_quantity - order.quantity)
     fp.money_earned = max(0, fp.money_earned - order.total_amount)
     fp.save(update_fields=['sold_quantity', 'money_earned'])
 
-    # Remove the linked sale record, since this is no longer an actual sale
     if hasattr(order, 'sale_record') and order.sale_record:
         order.sale_record.delete()
 
@@ -641,8 +706,35 @@ def cancel_paid_order(request, order_id):
     order.delivery_status = Order.DELIVERY_CANCELLED
     order.save(update_fields=['status', 'delivery_status'])
 
+    send_notification_email(
+        subject=f"Your order #{order.id} has been cancelled",
+        message=(
+            f"Hi {order.customer.first_name or order.customer.username},\n\n"
+            f"Your order for {order.farmer_product.product.name} "
+            f"({order.quantity} kg) has been cancelled.\n\n"
+            f"If this was a mistake or you have questions, please contact us.\n\n"
+            f"— The FreshRoots Team"
+        ),
+        recipient_email=order.customer.email,
+    )
+    farmer_user = order.farmer_product.farm.user_profile.user
+
+    send_notification_email(
+        subject=f"Order #{order.id} has been cancelled by the customer",
+        message=(
+            f"Hi {farmer_user.first_name or farmer_user.username},\n\n"
+            f"An order for {order.farmer_product.product.name} "
+            f"({order.quantity} kg) has been cancelled by the customer "
+            f"before it was shipped.\n\n"
+            f"No further action is needed from you — your stock and "
+            f"earnings for this order have been automatically reversed.\n\n"
+            f"— The FreshRoots Team"
+        ),
+        recipient_email=farmer_user.email,
+    )
     messages.success(request, f"Order #{order.id} has been cancelled.")
     return redirect('purchase_history')
+
 
 @login_required
 def submit_review(request, order_id):
