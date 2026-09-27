@@ -222,3 +222,5 @@ media/
 
 # Collected static files
 staticfiles/
+datadump.json
+datadump_clean.json
